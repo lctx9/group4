@@ -1,0 +1,14 @@
+# Chặn các file cấu hình môi trường chứa API Key
+.env
+api_key.txt
+secrets.json
+
+# Chặn các thư mục rác của Python và hệ điều hành
+__pycache__/
+*.pyc
+.DS_Store
+
+# Chặn checkpoint tạm thời (nếu không muốn đưa lên github quá sớm)
+results/*_checkpoint.csv
+
+data/raw/
