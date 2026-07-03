@@ -11,4 +11,6 @@ __pycache__/
 # Chặn checkpoint tạm thời (nếu không muốn đưa lên github quá sớm)
 results/*_checkpoint.csv
 
-data/raw/
+# SỬA LỖI GATE E2 & E7: Giữ lại cấu trúc folder và file README tài liệu, chỉ chặn data nặng
+data/raw/*
+!data/raw/README.md
