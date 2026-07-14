@@ -262,6 +262,10 @@ for i, row in df_tasks.iterrows():
         with open(LOG_PATH, 'a', encoding='utf-8') as log:
             log.write(f"Timestamp: {time.time()} | Model: {model_used} | Task: {task_id} | Sample: {sample_idx} | State: {final_state} | Cost: {cost} | Errors: {error_msg}\n")
             
+        # Thêm khoảng nghỉ ngắn để tránh dính lỗi Rate Limit 429 của các mô hình Free (Gemini/OpenRouter)
+        if not IS_MOCK:
+            time.sleep(4.0)
+            
     # Tự động ghi checkpoint sau mỗi 100 tác vụ lớn
     if (i + 1) % 100 == 0:
         pd.DataFrame(results).to_csv(CHECKPOINT_PATH, index=False)
