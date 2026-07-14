@@ -45,15 +45,15 @@ def call_llm_with_retry(client, model, messages, max_retries=5):
             response = client.chat.completions.create(
                 model=model,
                 messages=messages,
-                timeout=20 # Giảm xuống 20 giây để phát hiện timeout nhanh hơn
+                timeout=30 # 30 giây đủ cho Gemini phản hồi
             )
             return response
         except Exception as e:
             err_str = str(e).lower()
-            # Retry cả lỗi 429 (Rate Limit) và 503 (Server Overload)
-            if "rate_limit" in err_str or "429" in err_str or "503" in err_str or "unavailable" in err_str or "overloaded" in err_str:
-                wait = (2 ** attempt) + random.uniform(0, 1) # 1s, 2s, 4s, 8s, 16s + jitter
-                print(f"⚠️ Server quá tải/Rate limit (lần {attempt+1}/{max_retries}), thử lại sau {wait:.1f}s...")
+            # Retry cả lỗi 429 (Rate Limit), 503 (Server Overload) và Timeout
+            if any(k in err_str for k in ["rate_limit", "429", "503", "unavailable", "overloaded", "timed out", "timeout", "connection"]):
+                wait = (2 ** attempt) + random.uniform(0, 1)
+                print(f"⚠️ Server quá tải/Timeout (lần {attempt+1}/{max_retries}), thử lại sau {wait:.1f}s...")
                 time.sleep(wait)
             else:
                 print(f"❌ Gặp lỗi API khác, không retry: {e}")
