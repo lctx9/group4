@@ -38,7 +38,8 @@ def call_llm_with_retry(client, model, messages, max_retries=5):
         try:
             response = client.chat.completions.create(
                 model=model,
-                messages=messages
+                messages=messages,
+                timeout=45 # Thêm timeout 45 giây để tránh treo máy khi OpenRouter bị quá tải
             )
             return response
         except Exception as e:
@@ -174,9 +175,8 @@ start_time = time.time()
 for i, row in df_tasks.iterrows():
     task_id = row.get('instance_id', f"task_{i}")
     
-    # In tiến trình mỗi 50 tasks để không gây tràn console log
-    if (i + 1) % 50 == 0 or i == 0 or (i + 1) == len(df_tasks):
-        print(f"🤖 Tiến độ: Tác vụ {i+1}/{len(df_tasks)} (Task ID {task_id})...")
+    # In tiến trình cho từng tác vụ để người dùng dễ theo dõi thời gian thực
+    print(f"🤖 Tiến độ: Tác vụ {i+1}/{len(df_tasks)} (Task ID {task_id})...")
         
     for sample_idx in range(1, K_BUDGET + 1):
         final_state = "fail"

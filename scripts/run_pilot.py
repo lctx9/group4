@@ -36,7 +36,8 @@ def call_llm_with_retry(client, model, messages, max_retries=5):
         try:
             response = client.chat.completions.create(
                 model=model,
-                messages=messages
+                messages=messages,
+                timeout=45 # Thêm timeout 45 giây để tránh treo máy khi OpenRouter bị quá tải
             )
             return response
         except Exception as e:
