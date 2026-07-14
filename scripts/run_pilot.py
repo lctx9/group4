@@ -77,7 +77,9 @@ else:
         else:
             # Dùng chung OpenRouter client cho cả hai mô hình nếu thiếu key DeepSeek riêng
             deepseek_client = openrouter_client
-            DEEPSEEK_MODEL = "deepseek/deepseek-r1" # Chuyển sang gọi R1 qua OpenRouter
+            # Nếu tên model chưa chứa dấu gạch chéo (chưa định cấu hình cụ thể cho OpenRouter), ta mới dùng mặc định
+            if "/" not in DEEPSEEK_MODEL:
+                DEEPSEEK_MODEL = "deepseek/deepseek-r1"
         
     print(f"--- KÍCH HOẠT CHẠY AGENT VỚI NGÂN SÁCH K = {K_BUDGET} ---")
     print(f"Tổng số tác vụ: {len(df_pilot)} | Tổng số lượt Agent cần chạy: {len(df_pilot) * K_BUDGET}")

@@ -130,7 +130,9 @@ else:
         deepseek_client = OpenAI(api_key=DEEPSEEK_KEY, base_url=DEEPSEEK_BASE)
     else:
         deepseek_client = openrouter_client
-        DEEPSEEK_MODEL = "deepseek/deepseek-r1" # Chuyển sang gọi R1 qua OpenRouter
+        # Nếu tên model chưa chứa dấu gạch chéo (chưa định cấu hình cụ thể cho OpenRouter), ta mới dùng mặc định
+        if "/" not in DEEPSEEK_MODEL:
+            DEEPSEEK_MODEL = "deepseek/deepseek-r1"
     
 print(f"--- KÍCH HOẠT CHẠY FULL EXPERIMENT VỚI NGÂN SÁCH K = {K_BUDGET} ---")
 print(f"Tổng số tác vụ: {len(df_tasks)} | Tổng số lượt Agent cần chạy: {len(df_tasks) * K_BUDGET}")
