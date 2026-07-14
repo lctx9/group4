@@ -100,10 +100,14 @@ else:
             
     if not found_parquet_path:
         import glob
+        # Quét thư mục hiện tại và quét thêm thư mục cha (trong trường hợp chạy từ thư mục scripts/)
         parquet_files = glob.glob('**/*.parquet', recursive=True)
-        if parquet_files:
+        parent_parquet_files = glob.glob('../**/*.parquet', recursive=True)
+        all_parquet_files = parquet_files + parent_parquet_files
+        
+        if all_parquet_files:
             # Loại trừ các file trong virtual environments nếu có để tránh quét nhầm
-            filtered_files = [f for f in parquet_files if 'venv' not in f.lower() and 'env' not in f.lower()]
+            filtered_files = [f for f in all_parquet_files if 'venv' not in f.lower() and 'env' not in f.lower()]
             if filtered_files:
                 found_parquet_path = filtered_files[0]
                 
