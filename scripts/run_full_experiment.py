@@ -170,8 +170,8 @@ if limit_tasks:
     except Exception as e:
         print(f"⚠️ Lỗi cấu hình LIMIT_TASKS: {e}")
 
-# ĐỊNH NGHĨA NGÂN SÁCH K=3 (chạy 3 lần độc lập mỗi task để kiểm soát tính ngẫu nhiên như Threat 2)
-K_BUDGET = 3
+# ĐỊNH NGHĨA NGÂN SÁCH K=1 (chạy 1 lần mỗi task để tăng tốc độ)
+K_BUDGET = 1
 
 if IS_MOCK:
     print("💡 Chạy ở chế độ GIẢ LẬP (MOCK MODE) vì chưa cấu hình đủ API keys.")
