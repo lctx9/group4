@@ -48,9 +48,11 @@ def call_llm_with_retry(client, model, messages, max_retries=5):
             )
             return response
         except Exception as e:
-            if "rate_limit" in str(e).lower() or "429" in str(e):
+            err_str = str(e).lower()
+            # Retry cả lỗi 429 (Rate Limit) và 503 (Server Overload)
+            if "rate_limit" in err_str or "429" in err_str or "503" in err_str or "unavailable" in err_str or "overloaded" in err_str:
                 wait = (2 ** attempt) + random.uniform(0, 1) # 1s, 2s, 4s, 8s, 16s + jitter
-                print(f"⚠️ Rate limit hit. Retry {attempt+1}/{max_retries} sau {wait:.1f}s. Chi tiết lỗi: {e}")
+                print(f"⚠️ Server quá tải/Rate limit (lần {attempt+1}/{max_retries}), thử lại sau {wait:.1f}s...")
                 time.sleep(wait)
             else:
                 print(f"❌ Gặp lỗi API khác, không retry: {e}")
