@@ -109,6 +109,26 @@ if not dataset_exists:
             })
         df_tasks = pd.DataFrame(mock_data)
 
+# Hỗ trợ phân chia dữ liệu chạy song song trên nhiều máy (Sharding)
+shard_index = os.getenv("SHARD_INDEX")
+shard_count = os.getenv("SHARD_COUNT")
+
+if shard_index and shard_count:
+    try:
+        s_idx = int(shard_index)
+        s_cnt = int(shard_count)
+        if 0 <= s_idx < s_cnt:
+            # Phân tách dữ liệu xen kẽ (round-robin)
+            df_tasks = df_tasks.iloc[s_idx::s_cnt].reset_index(drop=True)
+            print(f"🔗 [SHARDING] Đang chạy phân mảnh {s_idx + 1}/{s_cnt} | Số tác vụ phân mảnh này: {len(df_tasks)}")
+            
+            # Đổi tên file output tương ứng với phân mảnh để tránh ghi đè
+            FINAL_OUTPUT = f"results/full_llm_output_part_{s_idx}.csv"
+            CHECKPOINT_PATH = f"results/full_llm_output_checkpoint_part_{s_idx}.csv"
+            LOG_PATH = f"results/full_api_log_part_{s_idx}.txt"
+    except Exception as e:
+        print(f"⚠️ Lỗi cấu hình SHARDING: {e}")
+
 # Cho phép giới hạn số lượng tác vụ chạy bằng biến môi trường để rút ngắn thời gian
 limit_tasks = os.getenv("LIMIT_TASKS")
 if limit_tasks:
