@@ -19,18 +19,18 @@ LOG_PATH = 'results/full_api_log.txt'
 
 os.makedirs('results', exist_ok=True)
 
-# Lấy cấu hình OpenRouter từ môi trường (Exploration Agent)
+# Lấy cấu hình OpenRouter từ môi trường
 OPENROUTER_KEY = os.getenv("OPENROUTER_API_KEY")
 OPENROUTER_BASE = os.getenv("OPENROUTER_API_BASE", "https://openrouter.ai/api/v1")
-EXPLORATION_MODEL = os.getenv("EXPLORATION_MODEL_NAME", "deepseek/deepseek-chat")
 
-# Lấy cấu hình Gemini (Code Action Fixer)
-GEMINI_KEY = os.getenv("GEMINI_API_KEY")
-GEMINI_BASE = os.getenv("GEMINI_API_BASE", "https://generativelanguage.googleapis.com/v1beta/openai/")
-FIXER_MODEL = os.getenv("GEMINI_MODEL_NAME", "gemini-2.0-flash")
+# Exploration Agent (Lượt 1)
+EXPLORATION_MODEL = os.getenv("EXPLORATION_MODEL_NAME", "deepseek/deepseek-chat:free")
+
+# Code Action Fixer Agent (Lượt 2)
+FIXER_MODEL = os.getenv("FIXER_MODEL_NAME", "meta-llama/llama-3.3-70b-instruct:free")
 
 # Chế độ chạy: Mock nếu thiếu key
-IS_MOCK = not (OPENROUTER_KEY or GEMINI_KEY)
+IS_MOCK = not OPENROUTER_KEY
 
 # Hàm gọi LLM với exponential backoff
 def call_llm_with_retry(client, model, messages, max_retries=5):
@@ -177,7 +177,7 @@ if IS_MOCK:
     print("💡 Chạy ở chế độ GIẢ LẬP (MOCK MODE) vì chưa cấu hình đủ API keys.")
 else:
     print("🚀 Chạy ở chế độ LIÊN KẾT API THẬT.")
-    # Setup clients
+    # Dùng chung 1 OpenRouter client cho cả 2 agent
     openrouter_client = OpenAI(
         api_key=OPENROUTER_KEY,
         base_url=OPENROUTER_BASE,
@@ -185,9 +185,8 @@ else:
             "HTTP-Referer": "https://github.com/lctx9/group4",
             "X-Title": "RT-SWT-005 Group 4 Project"
         }
-    ) if OPENROUTER_KEY else None
-
-    fixer_client = OpenAI(api_key=GEMINI_KEY, base_url=GEMINI_BASE)
+    )
+    fixer_client = openrouter_client  # Dùng chung client, khác model
     
 print(f"--- KÍCH HOẠT CHẠY FULL EXPERIMENT VỚI NGÂN SÁCH K = {K_BUDGET} ---")
 print(f"Tổng số tác vụ: {len(df_tasks)} | Tổng số lượt Agent cần chạy: {len(df_tasks) * K_BUDGET}")
