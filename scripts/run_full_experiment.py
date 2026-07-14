@@ -41,10 +41,11 @@ IS_MOCK = not (OPENROUTER_KEY or DEEPSEEK_KEY or GEMINI_KEY)
 def call_llm_with_retry(client, model, messages, max_retries=5):
     for attempt in range(max_retries):
         try:
+            print(f"   📡 Đang gọi {model} (lần thử {attempt+1})...", flush=True)
             response = client.chat.completions.create(
                 model=model,
                 messages=messages,
-                timeout=45 # Thêm timeout 45 giây để tránh treo máy khi OpenRouter bị quá tải
+                timeout=20 # Giảm xuống 20 giây để phát hiện timeout nhanh hơn
             )
             return response
         except Exception as e:
