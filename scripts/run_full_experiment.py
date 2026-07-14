@@ -109,6 +109,17 @@ if not dataset_exists:
             })
         df_tasks = pd.DataFrame(mock_data)
 
+# Cho phép giới hạn số lượng tác vụ chạy bằng biến môi trường để rút ngắn thời gian
+limit_tasks = os.getenv("LIMIT_TASKS")
+if limit_tasks:
+    try:
+        limit_val = int(limit_tasks)
+        if limit_val < len(df_tasks):
+            df_tasks = df_tasks.sample(n=limit_val, random_state=42).reset_index(drop=True)
+            print(f"✂️ Đã giới hạn chạy thực nghiệm trên {limit_val} tác vụ ngẫu nhiên (random_state=42) để rút ngắn thời gian.")
+    except Exception as e:
+        print(f"⚠️ Lỗi cấu hình LIMIT_TASKS: {e}")
+
 # ĐỊNH NGHĨA NGÂN SÁCH K=3 (chạy 3 lần độc lập mỗi task để kiểm soát tính ngẫu nhiên như Threat 2)
 K_BUDGET = 3
 
