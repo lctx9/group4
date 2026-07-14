@@ -59,15 +59,27 @@ RAW_PARQUET_INPUT = 'data/raw/dev-00000-of-00001.parquet'
 
 if os.path.exists(RAW_FULL_INPUT):
     try:
-        import json
-        with open(RAW_FULL_INPUT, 'r', encoding='utf-8') as f:
-            raw_data = json.load(f)
-        if isinstance(raw_data, dict):
-            df_tasks = pd.DataFrame.from_dict(raw_data, orient='index')
-            df_tasks.index.name = 'instance_id'
-            df_tasks = df_tasks.reset_index()
-        else:
-            df_tasks = pd.DataFrame(raw_data)
+        # Thử đọc bằng pandas read_json hỗ trợ JSON Lines (lines=True)
+        try:
+            df_tasks = pd.read_json(RAW_FULL_INPUT, lines=True)
+            print("✅ Đã tải dữ liệu thành công từ file JSON Lines (JSONL).")
+        except Exception:
+            # Thử đọc bằng pandas read_json chuẩn
+            try:
+                df_tasks = pd.read_json(RAW_FULL_INPUT)
+                print("✅ Đã tải dữ liệu thành công dưới dạng Standard JSON.")
+            except Exception:
+                # Fallback sang json.load truyền thống
+                import json
+                with open(RAW_FULL_INPUT, 'r', encoding='utf-8') as f:
+                    raw_data = json.load(f)
+                if isinstance(raw_data, dict):
+                    df_tasks = pd.DataFrame.from_dict(raw_data, orient='index')
+                    df_tasks.index.name = 'instance_id'
+                    df_tasks = df_tasks.reset_index()
+                else:
+                    df_tasks = pd.DataFrame(raw_data)
+                print("✅ Đã tải dữ liệu thành công bằng json.load.")
         dataset_exists = True
         print(f"✅ Đã tìm thấy và tải dữ liệu FULL từ file JSON: {RAW_FULL_INPUT}")
     except Exception as e:
