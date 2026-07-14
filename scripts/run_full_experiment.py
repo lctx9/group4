@@ -85,13 +85,35 @@ if os.path.exists(RAW_FULL_INPUT):
         print(f"✅ Đã tìm thấy và tải dữ liệu FULL từ file JSON: {RAW_FULL_INPUT}")
     except Exception as e:
         print(f"⚠️ Không thể đọc file JSON {RAW_FULL_INPUT}: {e}")
-elif os.path.exists(RAW_PARQUET_INPUT):
-    try:
-        df_tasks = pd.read_parquet(RAW_PARQUET_INPUT)
-        dataset_exists = True
-        print(f"✅ Đã tìm thấy và tải dữ liệu FULL từ file Parquet: {RAW_PARQUET_INPUT}")
-    except Exception as e:
-        print(f"⚠️ Không thể đọc file Parquet {RAW_PARQUET_INPUT}: {e}")
+else:
+    # Tìm kiếm file parquet ở các vị trí dự phòng hoặc quét đệ quy trong thư mục
+    parquet_paths = [
+        RAW_PARQUET_INPUT,
+        'data/dev-00000-of-00001.parquet',
+        'dev-00000-of-00001.parquet'
+    ]
+    found_parquet_path = None
+    for path in parquet_paths:
+        if os.path.exists(path):
+            found_parquet_path = path
+            break
+            
+    if not found_parquet_path:
+        import glob
+        parquet_files = glob.glob('**/*.parquet', recursive=True)
+        if parquet_files:
+            # Loại trừ các file trong virtual environments nếu có để tránh quét nhầm
+            filtered_files = [f for f in parquet_files if 'venv' not in f.lower() and 'env' not in f.lower()]
+            if filtered_files:
+                found_parquet_path = filtered_files[0]
+                
+    if found_parquet_path:
+        try:
+            df_tasks = pd.read_parquet(found_parquet_path)
+            dataset_exists = True
+            print(f"✅ Đã tìm thấy và tải dữ liệu FULL từ file Parquet: {found_parquet_path}")
+        except Exception as e:
+            print(f"⚠️ Không thể đọc file Parquet {found_parquet_path}: {e}")
 
 if not dataset_exists:
     if os.path.exists(PILOT_INPUT):
