@@ -55,6 +55,8 @@ def call_llm_with_retry(client, model, messages, max_retries=5):
 dataset_exists = False
 df_tasks = None
 
+RAW_PARQUET_INPUT = 'data/raw/dev-00000-of-00001.parquet'
+
 if os.path.exists(RAW_FULL_INPUT):
     try:
         import json
@@ -67,9 +69,16 @@ if os.path.exists(RAW_FULL_INPUT):
         else:
             df_tasks = pd.DataFrame(raw_data)
         dataset_exists = True
-        print(f"✅ Đã tìm thấy và tải dữ liệu FULL từ: {RAW_FULL_INPUT}")
+        print(f"✅ Đã tìm thấy và tải dữ liệu FULL từ file JSON: {RAW_FULL_INPUT}")
     except Exception as e:
         print(f"⚠️ Không thể đọc file JSON {RAW_FULL_INPUT}: {e}")
+elif os.path.exists(RAW_PARQUET_INPUT):
+    try:
+        df_tasks = pd.read_parquet(RAW_PARQUET_INPUT)
+        dataset_exists = True
+        print(f"✅ Đã tìm thấy và tải dữ liệu FULL từ file Parquet: {RAW_PARQUET_INPUT}")
+    except Exception as e:
+        print(f"⚠️ Không thể đọc file Parquet {RAW_PARQUET_INPUT}: {e}")
 
 if not dataset_exists:
     if os.path.exists(PILOT_INPUT):
