@@ -18,23 +18,18 @@ LOG_PATH = 'results/pilot_api_log.txt'
 
 os.makedirs('results', exist_ok=True)
 
-# Lấy cấu hình OpenRouter từ môi trường
+# Lấy cấu hình OpenRouter từ môi trường (Exploration Agent)
 OPENROUTER_KEY = os.getenv("OPENROUTER_API_KEY")
 OPENROUTER_BASE = os.getenv("OPENROUTER_API_BASE", "https://openrouter.ai/api/v1")
-EXPLORATION_MODEL = os.getenv("EXPLORATION_MODEL_NAME", "deepseek/deepseek-chat") # Dùng DeepSeek-V3 làm Exploration Agent
+EXPLORATION_MODEL = os.getenv("EXPLORATION_MODEL_NAME", "deepseek/deepseek-chat")
 
-# Lấy cấu hình DeepSeek Native từ môi trường (nếu có)
-DEEPSEEK_KEY = os.getenv("DEEPSEEK_API_KEY")
-DEEPSEEK_BASE = os.getenv("DEEPSEEK_API_BASE", "https://api.deepseek.com/v1")
-DEEPSEEK_MODEL = os.getenv("DEEPSEEK_MODEL_NAME", "deepseek-reasoner")
-
-# Lấy cấu hình Gemini (nếu có)
+# Lấy cấu hình Gemini (Code Action Fixer)
 GEMINI_KEY = os.getenv("GEMINI_API_KEY")
 GEMINI_BASE = os.getenv("GEMINI_API_BASE", "https://generativelanguage.googleapis.com/v1beta/openai/")
-GEMINI_MODEL = os.getenv("GEMINI_MODEL_NAME", "gemini-2.5-flash")
+FIXER_MODEL = os.getenv("GEMINI_MODEL_NAME", "gemini-2.0-flash")
 
-# Chế độ chạy: Mock nếu không có bất cứ key nào
-IS_MOCK = not (OPENROUTER_KEY or DEEPSEEK_KEY or GEMINI_KEY)
+# Chế độ chạy: Mock nếu không có key nào
+IS_MOCK = not (OPENROUTER_KEY or GEMINI_KEY)
 
 def call_llm_with_retry(client, model, messages, max_retries=5):
     for attempt in range(max_retries):
@@ -81,18 +76,7 @@ else:
             }
         ) if OPENROUTER_KEY else None
         
-        if GEMINI_KEY:
-            # Nếu cấu hình Gemini key, ta dùng Gemini làm Fixer Agent
-            deepseek_client = OpenAI(api_key=GEMINI_KEY, base_url=GEMINI_BASE)
-            DEEPSEEK_MODEL = GEMINI_MODEL
-        elif DEEPSEEK_KEY:
-            deepseek_client = OpenAI(api_key=DEEPSEEK_KEY, base_url=DEEPSEEK_BASE)
-        else:
-            # Dùng chung OpenRouter client cho cả hai mô hình nếu thiếu key DeepSeek/Gemini riêng
-            deepseek_client = openrouter_client
-            # Nếu tên model chưa chứa dấu gạch chéo (chưa định cấu hình cụ thể cho OpenRouter), ta mới dùng mặc định
-            if "/" not in DEEPSEEK_MODEL:
-                DEEPSEEK_MODEL = "deepseek/deepseek-r1"
+        fixer_client = OpenAI(api_key=GEMINI_KEY, base_url=GEMINI_BASE)
         
     print(f"--- KÍCH HOẠT CHẠY AGENT VỚI NGÂN SÁCH K = {K_BUDGET} ---")
     print(f"Tổng số tác vụ: {len(df_pilot)} | Tổng số lượt Agent cần chạy: {len(df_pilot) * K_BUDGET}")
@@ -127,15 +111,15 @@ else:
                     else:
                         explore_output = explore_resp.choices[0].message.content
                         
-                        # LƯỢT 2: Code Action Fixer (DeepSeek R1/Reasoner Native hoặc via OpenRouter)
-                        prompt_ds = f"Below is the log/output of the exploration agent. Please fix the test suite code to resolve bugs.\n{explore_output}"
-                        ds_msg = [{"role": "user", "content": prompt_ds}]
-                        
-                        ds_resp = call_llm_with_retry(deepseek_client, DEEPSEEK_MODEL, ds_msg)
-                        
-                        if ds_resp is None:
+                        # LƯỢT 2: Code Action Fixer (Gemini)
+                        prompt_fixer = f"Below is the log/output of the exploration agent. Please fix the test suite code to resolve bugs.\n{explore_output}"
+                        fixer_msg = [{"role": "user", "content": prompt_fixer}]
+
+                        fixer_resp = call_llm_with_retry(fixer_client, FIXER_MODEL, fixer_msg)
+
+                        if fixer_resp is None:
                             final_state = "INVALID"
-                            error_msg = "Empty/Failed DeepSeek response"
+                            error_msg = "Empty/Failed Fixer response"
                         else:
                             final_state = "pass" if random.random() < 0.35 else "fail"
                             
@@ -153,7 +137,7 @@ else:
             results.append(agent_output)
             
             # Ghi log
-            model_used = "mock-model" if IS_MOCK else f"{EXPLORATION_MODEL}+{DEEPSEEK_MODEL}"
+            model_used = "mock-model" if IS_MOCK else f"{EXPLORATION_MODEL}+{FIXER_MODEL}"
             with open(LOG_PATH, 'a', encoding='utf-8') as log:
                 log.write(f"Timestamp: {time.time()} | Model: {model_used} | Task: {task_id} | Sample: {sample_idx} | State: {final_state} | Cost: {cost} | Errors: {error_msg}\n")
                 
