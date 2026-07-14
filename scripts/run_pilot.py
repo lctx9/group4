@@ -28,8 +28,13 @@ DEEPSEEK_KEY = os.getenv("DEEPSEEK_API_KEY")
 DEEPSEEK_BASE = os.getenv("DEEPSEEK_API_BASE", "https://api.deepseek.com/v1")
 DEEPSEEK_MODEL = os.getenv("DEEPSEEK_MODEL_NAME", "deepseek-reasoner")
 
-# Chế độ chạy: Mock nếu không có key nào
-IS_MOCK = not (OPENROUTER_KEY or (DEEPSEEK_KEY and os.getenv("QWEN_API_KEY")))
+# Lấy cấu hình Gemini (nếu có)
+GEMINI_KEY = os.getenv("GEMINI_API_KEY")
+GEMINI_BASE = os.getenv("GEMINI_API_BASE", "https://generativelanguage.googleapis.com/v1beta/openai/")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL_NAME", "gemini-2.5-flash")
+
+# Chế độ chạy: Mock nếu không có bất cứ key nào
+IS_MOCK = not (OPENROUTER_KEY or DEEPSEEK_KEY or GEMINI_KEY)
 
 def call_llm_with_retry(client, model, messages, max_retries=5):
     for attempt in range(max_retries):
@@ -73,10 +78,14 @@ else:
             }
         ) if OPENROUTER_KEY else None
         
-        if DEEPSEEK_KEY:
+        if GEMINI_KEY:
+            # Nếu cấu hình Gemini key, ta dùng Gemini làm Fixer Agent
+            deepseek_client = OpenAI(api_key=GEMINI_KEY, base_url=GEMINI_BASE)
+            DEEPSEEK_MODEL = GEMINI_MODEL
+        elif DEEPSEEK_KEY:
             deepseek_client = OpenAI(api_key=DEEPSEEK_KEY, base_url=DEEPSEEK_BASE)
         else:
-            # Dùng chung OpenRouter client cho cả hai mô hình nếu thiếu key DeepSeek riêng
+            # Dùng chung OpenRouter client cho cả hai mô hình nếu thiếu key DeepSeek/Gemini riêng
             deepseek_client = openrouter_client
             # Nếu tên model chưa chứa dấu gạch chéo (chưa định cấu hình cụ thể cho OpenRouter), ta mới dùng mặc định
             if "/" not in DEEPSEEK_MODEL:

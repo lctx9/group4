@@ -29,8 +29,13 @@ DEEPSEEK_KEY = os.getenv("DEEPSEEK_API_KEY")
 DEEPSEEK_BASE = os.getenv("DEEPSEEK_API_BASE", "https://api.deepseek.com/v1")
 DEEPSEEK_MODEL = os.getenv("DEEPSEEK_MODEL_NAME", "deepseek-reasoner")
 
+# Lấy cấu hình Gemini (nếu có)
+GEMINI_KEY = os.getenv("GEMINI_API_KEY")
+GEMINI_BASE = os.getenv("GEMINI_API_BASE", "https://generativelanguage.googleapis.com/v1beta/openai/")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL_NAME", "gemini-2.5-flash")
+
 # Chế độ chạy: Mock nếu thiếu key
-IS_MOCK = not (OPENROUTER_KEY or (DEEPSEEK_KEY and os.getenv("QWEN_API_KEY")))
+IS_MOCK = not (OPENROUTER_KEY or DEEPSEEK_KEY or GEMINI_KEY)
 
 # Hàm gọi LLM với exponential backoff
 def call_llm_with_retry(client, model, messages, max_retries=5):
@@ -184,7 +189,10 @@ else:
         }
     ) if OPENROUTER_KEY else None
     
-    if DEEPSEEK_KEY:
+    if GEMINI_KEY:
+        deepseek_client = OpenAI(api_key=GEMINI_KEY, base_url=GEMINI_BASE)
+        DEEPSEEK_MODEL = GEMINI_MODEL
+    elif DEEPSEEK_KEY:
         deepseek_client = OpenAI(api_key=DEEPSEEK_KEY, base_url=DEEPSEEK_BASE)
     else:
         deepseek_client = openrouter_client
