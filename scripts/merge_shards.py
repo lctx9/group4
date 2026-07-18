@@ -5,10 +5,12 @@ import os
 print("--- KHỞI ĐỘNG GỘP CÁC PHÂN MẢNH KẾT QUẢ THỰC NGHIỆM ---")
 
 # Tìm toàn bộ các file phân mảnh có đuôi csv trong thư mục results
-files = glob.glob('results/full_llm_output_part_*.csv')
+raw_files = glob.glob('results/full_llm_output_part*.csv')
+# Loại bỏ file kết quả tổng hợp chính nếu trùng tên
+files = [f for f in raw_files if os.path.basename(f) != 'full_llm_output.csv']
 
 if not files:
-    print("❌ Không tìm thấy phân mảnh kết quả nào có dạng: results/full_llm_output_part_*.csv")
+    print("❌ Không tìm thấy phân mảnh kết quả nào có dạng: results/full_llm_output_part*.csv")
 else:
     print(f"🔍 Tìm thấy {len(files)} phân mảnh kết quả: {files}")
     dfs = []

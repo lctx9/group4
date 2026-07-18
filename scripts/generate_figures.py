@@ -88,7 +88,10 @@ else:
         ax = sns.boxplot(x="group", y="f2p", data=df_plot_dist, palette="Set2", width=0.5)
         sns.stripplot(x="group", y="f2p", data=df_plot_dist, color="black", alpha=0.15, size=4, jitter=0.2)
     else:
-        plt.boxplot([df_repo_agent['f2p'], df_repo_base['f2p']], labels=["Agentic Exploration", "Plain Baseline"])
+        try:
+            plt.boxplot([df_repo_agent['f2p'], df_repo_base['f2p']], tick_labels=["Agentic Exploration", "Plain Baseline"])
+        except TypeError:
+            plt.boxplot([df_repo_agent['f2p'], df_repo_base['f2p']], labels=["Agentic Exploration", "Plain Baseline"])
         
     plt.title("Phân phối tỉ lệ Fail-to-Pass (F2P %) theo Repository\n(Tuần 8 - Full Experiment)", fontsize=13, fontweight='bold', pad=15)
     plt.xlabel("Cấu hình kiểm thử", fontsize=11, labelpad=10)
@@ -124,7 +127,7 @@ else:
     plt.ylim(0, max(avg_agent, avg_base) * 1.25)
     
     # Thêm ghi chú N
-    plt.text(0.5, max(avg_agent, avg_base) * 1.15, f"Tổng số tác vụ kiểm định (N) = {len(df_full) // 3} tasks", 
+    plt.text(0.5, max(avg_agent, avg_base) * 1.15, f"Tổng số tác vụ kiểm định (N) = {df_full['task_id'].nunique()} tasks", 
              ha='center', va='center', fontsize=9, bbox=dict(boxstyle="round,pad=0.3", fc="blue", alpha=0.05))
              
     fig2_path = os.path.join(figures_dir, 'f2p_comparison.png')

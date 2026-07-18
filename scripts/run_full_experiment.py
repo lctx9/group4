@@ -139,6 +139,11 @@ if not dataset_exists:
             })
         df_tasks = pd.DataFrame(mock_data)
 
+# Xác định khoảng samples cần chạy (Mặc định chạy từ 1 đến K_BUDGET)
+K_BUDGET = int(os.getenv("K_BUDGET", "1"))
+start_sample = int(os.getenv("START_SAMPLE", "1"))
+end_sample = int(os.getenv("END_SAMPLE", str(K_BUDGET)))
+
 # Hỗ trợ phân chia dữ liệu chạy song song trên nhiều máy (Sharding)
 shard_index = os.getenv("SHARD_INDEX")
 shard_count = os.getenv("SHARD_COUNT")
@@ -152,9 +157,13 @@ if shard_index and shard_count:
             df_tasks = df_tasks.iloc[s_idx::s_cnt].reset_index(drop=True)
             print(f"🔗 [SHARDING] Đang chạy phân mảnh {s_idx + 1}/{s_cnt} | Số tác vụ phân mảnh này: {len(df_tasks)}")
             
-            # Đổi tên file output tương ứng với phân mảnh để tránh ghi đè
-            FINAL_OUTPUT = f"results/full_llm_output_part_{s_idx}.csv"
-            CHECKPOINT_PATH = f"results/full_llm_output_checkpoint_part_{s_idx}.csv"
+            # Đổi tên file output tương ứng với phân mảnh và khoảng samples để tránh ghi đè kết quả cũ
+            if start_sample == 1 and end_sample == 1:
+                FINAL_OUTPUT = f"results/full_llm_output_part_{s_idx}.csv"
+                CHECKPOINT_PATH = f"results/full_llm_output_checkpoint_part_{s_idx}.csv"
+            else:
+                FINAL_OUTPUT = f"results/full_llm_output_part_{s_idx}_samples_{start_sample}_to_{end_sample}.csv"
+                CHECKPOINT_PATH = f"results/full_llm_output_checkpoint_part_{s_idx}_samples_{start_sample}_to_{end_sample}.csv"
             LOG_PATH = f"results/full_api_log_part_{s_idx}.txt"
     except Exception as e:
         print(f"⚠️ Lỗi cấu hình SHARDING: {e}")
@@ -169,9 +178,6 @@ if limit_tasks:
             print(f"✂️ Đã giới hạn chạy thực nghiệm trên {limit_val} tác vụ ngẫu nhiên (random_state=42) để rút ngắn thời gian.")
     except Exception as e:
         print(f"⚠️ Lỗi cấu hình LIMIT_TASKS: {e}")
-
-# ĐỊNH NGHĨA NGÂN SÁCH K=1 (chạy 1 lần mỗi task để tăng tốc độ)
-K_BUDGET = 1
 
 if IS_MOCK:
     print("💡 Chạy ở chế độ GIẢ LẬP (MOCK MODE) vì chưa cấu hình đủ API keys.")
@@ -188,8 +194,8 @@ else:
     )
     fixer_client = openrouter_client  # Dùng chung client, khác model
     
-print(f"--- KÍCH HOẠT CHẠY FULL EXPERIMENT VỚI NGÂN SÁCH K = {K_BUDGET} ---")
-print(f"Tổng số tác vụ: {len(df_tasks)} | Tổng số lượt Agent cần chạy: {len(df_tasks) * K_BUDGET}")
+print(f"--- KÍCH HOẠT CHẠY FULL EXPERIMENT VỚI KHOẢNG SAMPLES {start_sample} -> {end_sample} ---")
+print(f"Tổng số tác vụ: {len(df_tasks)} | Tổng số lượt Agent cần chạy: {len(df_tasks) * (end_sample - start_sample + 1)}")
 
 results = []
 start_time = time.time()
@@ -200,7 +206,7 @@ for i, row in df_tasks.iterrows():
     # In tiến trình cho từng tác vụ để người dùng dễ theo dõi thời gian thực
     print(f"🤖 Tiến độ: Tác vụ {i+1}/{len(df_tasks)} (Task ID {task_id})...")
         
-    for sample_idx in range(1, K_BUDGET + 1):
+    for sample_idx in range(start_sample, end_sample + 1):
         final_state = "fail"
         cost = 0.0
         error_msg = ""
