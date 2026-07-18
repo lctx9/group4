@@ -1,3 +1,24 @@
+# ==============================================================================
+# HƯỚNG DẪN CẤU HÌNH VÀ CHẠY THỰC NGHIỆM TRÊN KAGGLE / COLAB
+# 
+# Các biến môi trường chính có thể tùy chỉnh:
+# 1. OPENROUTER_API_KEY: Khai báo API Key của OpenRouter (Bắt buộc để chạy thật)
+# 2. EXPLORATION_MODEL_NAME: Tên model Lượt 1 (Mặc định: deepseek/deepseek-chat:free)
+# 3. FIXER_MODEL_NAME: Tên model Lượt 2 (Mặc định: meta-llama/llama-3.3-70b-instruct:free)
+# 4. SHARD_COUNT: Tổng số máy chạy phân mảnh (Ví dụ: 4)
+# 5. SHARD_INDEX: Chỉ mục máy chạy phân mảnh (Giá trị từ 0 đến SHARD_COUNT - 1)
+# 6. K_BUDGET: Số lượt chạy độc lập cho mỗi tác vụ (Mặc định: 1 cho RQ1)
+# 7. START_SAMPLE & END_SAMPLE: Khoảng lượt chạy (Ví dụ chạy từ lượt 2 đến 5 đặt START_SAMPLE=2, END_SAMPLE=5)
+# 
+# Cách sử dụng trong Notebook:
+# -----------------------------
+# import os
+# os.environ["OPENROUTER_API_KEY"] = "sk-or-v1-..."
+# os.environ["SHARD_COUNT"] = "4"
+# os.environ["SHARD_INDEX"] = "0" # Thay đổi từ 0 đến 3 tương ứng với mỗi máy
+# !python scripts/run_full_experiment.py
+# ==============================================================================
+
 import pandas as pd
 import os
 import time
@@ -268,4 +289,4 @@ for i, row in df_tasks.iterrows():
 # Xuất file kết quả hoàn chỉnh
 pd.DataFrame(results).to_csv(FINAL_OUTPUT, index=False)
 total_time = time.time() - start_time
-print(f"🎉 HOÀN THÀNH TOÀN BỘ THỰC NGHIỆM FULL RUN K=3! Thời gian chạy: {total_time:.1f}s. Kết quả lưu tại: {FINAL_OUTPUT}")
+print(f"🎉 HOÀN THÀNH TOÀN BỘ THỰC NGHIỆM FULL RUN SAMPLES {start_sample} -> {end_sample}! Thời gian chạy: {total_time:.1f}s. Kết quả lưu tại: {FINAL_OUTPUT}")
