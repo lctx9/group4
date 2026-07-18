@@ -108,8 +108,12 @@ else:
     print(f"✅ Đã tạo biểu đồ phân phối: {fig1_path} (Độ phân giải 300 DPI)")
     
     # ==================== FIGURE 2: COMPARISON PLOT ====================
-    avg_agent = df_repo_agent['f2p'].mean()
-    avg_base = df_repo_base['f2p'].mean()
+    # Tính toán F2P trực tiếp trên toàn bộ cấp độ tác vụ (Micro-average) để khớp chính xác với báo cáo hệ thống
+    fails_agent = df_full[df_full['initial_state'] == 'fail']
+    avg_agent = (sum(fails_agent['final_state'] == 'pass') / len(fails_agent)) * 100 if len(fails_agent) > 0 else 0.0
+    
+    fails_base = df_baseline[df_baseline['initial_state'] == 'fail']
+    avg_base = (sum(fails_base['final_state'] == 'pass') / len(fails_base)) * 100 if len(fails_base) > 0 else 0.0
     
     plt.figure(figsize=(6, 6))
     colors = ['#4c72b0', '#c44e52']
