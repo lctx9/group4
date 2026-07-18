@@ -1,8 +1,8 @@
 Metric,Value
-Agentic_F2P_Avg,32.11%
-Baseline_F2P_Avg,17.09%
+Agentic_F2P_Avg,32.09%
+Baseline_F2P_Avg,17.07%
 N_Observations,437
 p-value,0.000000
-Effect_Size_Cliffs_Delta,0.2177
+Effect_Size_Cliffs_Delta,0.2195
 Effect_Size_Description,Trung bình (Medium)
 Reject_H0,Yes

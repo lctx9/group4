@@ -1386,6 +1386,7 @@ scrapy__parsel-320,1,fail,fail
 scrapy__scrapy-6527,1,fail,fail
 scrapy__scrapyd-343,1,fail,fail
 scrapy__scrapyd-384,1,fail,pass
+scrapy__scrapyd-520,1,fail,INVALID
 sdatkinson__neural-amp-modeler-20,1,fail,pass
 sdatkinson__neural-amp-modeler-258,1,fail,pass
 sdv-dev__CTGAN-310,1,fail,fail
