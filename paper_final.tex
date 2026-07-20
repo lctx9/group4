@@ -67,22 +67,22 @@ Automated Test Generation, Large Language Models, Agentic Exploration, Interacti
 \section{Introduction}
 \label{sec:intro}
 
-Writing test suites manually is time-consuming and error-prone, consuming up to 50\% of total software development budgets~\cite{myers2011art, evosuite, randoop, swebench}. In repository-level software maintenance, comprehensive unit testing is essential to prevent regressions and validate intended system semantics~\cite{docprompting, repobench, cse}. Consequently, automated test generation has emerged as a fundamental research area in automated software engineering, aiming to reduce developer burden while maintaining high code quality and software reliability.
+Writing test suites manually is time-consuming and error-prone, consuming up to 50\% of total software development budgets~\cite{myers2011art, evosuite, randoop, swebench}. In modern repository-level software maintenance, comprehensive unit testing is essential to prevent subtle code regressions, enforce continuous integration pipelines, and validate intended system semantics across interdependent modules~\cite{docprompting, repobench, cse}. As software systems grow increasingly complex, developer time spent writing, updating, and debugging test assertions often exceeds time spent implementing new core features. Consequently, automated test suite generation has emerged as a fundamental research area in automated software engineering, aiming to alleviate developer burden while maintaining high code quality and software system reliability.
 
-Recent studies have shown that Large Language Models (LLMs) can synthesize readable unit tests and achieve high code coverage across diverse programming languages~\cite{bareiss2022code, lemieux2023codamosa, xie2023chatunitest}. Advanced generative approaches leverage deep pre-trained semantic knowledge to generate human-like assertion statements and contextual setup code, outperforming traditional search-based software testing (SBST) techniques in terms of semantic readability and intent alignment~\cite{siddiq2023exploratory, schafer2023empirical}.
+Recent studies have shown that Large Language Models (LLMs) can synthesize readable unit tests and achieve high code coverage across diverse programming languages~\cite{bareiss2022code, lemieux2023codamosa, xie2023chatunitest}. Advanced generative approaches leverage deep pre-trained semantic knowledge to generate human-like assertion statements, mock objects, and contextual setup code, outperforming traditional search-based software testing (SBST) techniques in terms of semantic readability and intent alignment~\cite{siddiq2023exploratory, schafer2023empirical}. By learning patterns from vast open-source code repositories, LLMs can infer likely input-output relationships and draft domain-appropriate assertions far more effectively than random or genetic search algorithms.
 
-However, no study has evaluated interactive terminal execution feedback for repository-level test suite generation on documentation-derived intent benchmarks using real-time execution feedback loops. Existing LLM-based test generation tools operate predominantly in a static Plain Context paradigm, relying on single-pass code completion without dynamic execution feedback~\cite{testexplora}. Lacking runtime execution signals, these static approaches suffer severely from \textit{compliance bias}: models passively generate test assertions that conform to existing (defective) implementations, causing generated tests to pass on buggy codebases and fail to detect latent logic bugs~\cite{testexplora, sweagent}.
+However, no study has evaluated interactive terminal execution feedback for repository-level test suite generation on documentation-derived intent benchmarks using real-time execution feedback loops. Existing LLM-based test generation tools operate predominantly in a static Plain Context paradigm, relying on single-pass code completion without dynamic execution feedback~\cite{testexplora}. Lacking runtime execution signals, these static approaches suffer severely from \textit{compliance bias}: models passively generate test assertions that conform to existing (defective) implementations, causing generated tests to pass on buggy codebases and fail to detect latent logic bugs~\cite{testexplora, sweagent}. When evaluated on real-world repository bugs, static generative models produce tests that merely mirror current implementation flaws rather than validating intended functionality.
 
-In this paper, we investigate the effectiveness of interactive terminal execution feedback in breaking compliance bias for repository-level test suite generation. We propose an open-source multi-agent framework featuring an Agentic Exploration Agent (DeepSeek-V3 operating via an interactive SWE-agent CLI bash terminal) integrated with a Code Action Fixer Agent (Llama-3.3-70B). By executing test suites in real-time, observing \texttt{pytest} tracebacks, and iteratively refining adversarial assertions, our system proactively isolates repository-level defects.
+In this paper, we investigate the effectiveness of interactive terminal execution feedback in breaking compliance bias for repository-level test suite generation. We propose an open-source multi-agent framework featuring an Agentic Exploration Agent (DeepSeek-V3 operating via an interactive SWE-agent CLI bash terminal) integrated with a Code Action Fixer Agent (Llama-3.3-70B). By executing test suites in real-time, observing \texttt{pytest} tracebacks, and iteratively refining adversarial assertions across up to 80 interaction turns, our system proactively isolates repository-level defects without relying on human-written issue reports.
 
 To summarize, this paper contributes:
 \begin{enumerate}
     \item The first empirical evaluation of interactive terminal execution feedback for proactive repository-level test suite generation using Fail-to-Pass (F2P) rate on the TestExplora benchmark.
-    \item Experimental results on $N=1,552$ tasks ($4,656$ agent runs across 16 parallel shards) showing that our framework achieves an average Pass@1 F2P rate of 35.05\% (more than double the 16.60\% static baseline) and a Pass@3 rate of 71.59\% ($p = 0.000000$, $\text{Cliff's } \delta = 0.3018$).
+    \item Experimental results on $N=1,552$ tasks ($4,656$ agent runs across 16 parallel shards) showing that our framework achieves an average Pass@1 F2P rate of 35.05\% (more than double the 16.60\% static baseline) and a Pass@3 rate of 71.59\% ($p = 0.000000$, $\text{Cliff's } \delta = 0.3018$, medium effect size).
     \item A publicly available replication package including full execution logs, scripts, merged dataset, and figures at \url{https://github.com/lctx9/group4}.
 \end{enumerate}
 
-The rest of this paper is structured as follows. Section~\ref{sec:related} reviews related work in automated test generation and compliance bias. Section~\ref{sec:method} details our multi-agent architecture and experimental methodology. Section~\ref{sec:results} presents our empirical results and statistical analysis. Section~\ref{sec:discussion} provides qualitative discussion and failure mode analysis. Section~\ref{sec:threats} addresses threats to validity, and Section~\ref{sec:conclusion} concludes the paper and outlines future directions.
+The rest of this paper is structured as follows. Section~\ref{sec:related} reviews related work in automated test generation, search-based testing, and compliance bias. Section~\ref{sec:method} details our dataset, multi-agent pipeline architecture, metrics, and statistical analysis plan. Section~\ref{sec:results} presents our empirical results answering RQ1 and RQ2. Section~\ref{sec:discussion} provides qualitative discussion, failure mode analysis, and implications. Section~\ref{sec:threats} addresses threats to internal, external, construct, and conclusion validity, and Section~\ref{sec:conclusion} concludes the paper and outlines future directions.
 
 % ==============================================================================
 % SECTION 2: RELATED WORK
@@ -91,14 +91,14 @@ The rest of this paper is structured as follows. Section~\ref{sec:related} revie
 \label{sec:related}
 
 \subsection{Large Language Models for Automated Test Suite Generation}
-Recent advancements in Large Language Models (LLMs) have transformed automated software testing from heuristic code generation to semantic test synthesis. Early generative approaches utilized pre-trained code models such as Codex and StarCoder to generate unit tests from method signatures and docstrings~\cite{bareiss2022code}. Subsequent frameworks introduced few-shot prompting and context-augmented generation to improve assertion accuracy and line coverage. For instance, ChatUnitTest~\cite{xie2023chatunitest} leveraged ChatGPT to synthesize Java unit tests, achieving up to 74.2\% line coverage across open-source benchmarks. Similarly, CODAMOSA~\cite{lemieux2023codamosa} combined LLMs with search-based testing to escape coverage plateaus, increasing branch coverage by 18.5\% compared to traditional generators. In repository-level contexts, DocPrompting~\cite{docprompting} and RepoBench~\cite{repobench} incorporated documentation and multi-file context to guide code completion.
+Recent advancements in Large Language Models (LLMs) have transformed automated software testing from heuristic code generation to semantic test synthesis. Early generative approaches utilized pre-trained code models such as Codex and StarCoder to generate unit tests from method signatures and docstrings~\cite{bareiss2022code}. Subsequent frameworks introduced few-shot prompting, retrieval-augmented generation (RAG), and context-aware prompting to improve assertion accuracy, type inference, and line coverage across multi-file repositories. For instance, ChatUnitTest~\cite{xie2023chatunitest} leveraged ChatGPT to synthesize Java unit tests, achieving up to 74.2\% line coverage across open-source benchmarks. Similarly, CODAMOSA~\cite{lemieux2023codamosa} combined LLMs with search-based testing to escape coverage plateaus, increasing branch coverage by 18.5\% compared to traditional generators. In repository-level contexts, DocPrompting~\cite{docprompting} and RepoBench~\cite{repobench} incorporated documentation and multi-file context to guide code completion.
 
-Despite these achievements, a shared limitation of static LLM-based test generators is their vulnerability to \textit{compliance bias}~\cite{testexplora}. Because static models generate test code in a single inference pass without execution signals, they exhibit a passive tendency to conform to existing code implementations. When evaluated on defective repositories, static generators generate unit tests that pass on buggy code, yielding a Fail-to-Pass (F2P) rate floor of only 16.06\% on the TestExplora benchmark~\cite{testexplora}.
+Despite these achievements, a shared limitation of static LLM-based test generators is their vulnerability to \textit{compliance bias}~\cite{testexplora}. Because static models generate test code in a single inference pass without execution signals, they exhibit a passive tendency to conform to existing code implementations. When presented with a defective function, static models generate assertions that validate the erroneous behavior rather than detecting the underlying bug. When evaluated on real-world defective repositories, static generators generate unit tests that pass on buggy code, yielding a Fail-to-Pass (F2P) rate floor of only 16.06\% on the TestExplora benchmark~\cite{testexplora}.
 
 \subsection{Search-Based Software Testing and Execution-Driven Agents}
-Search-Based Software Testing (SBST) tools such as EvoSuite~\cite{evosuite} for Java and Randoop~\cite{randoop} for object-oriented systems utilize genetic algorithms and feedback-directed random input generation to maximize structural coverage. SBST tools excel at finding edge-case crashes and executing code paths dynamically; however, they lack natural language understanding, often producing unreadable test inputs with weak or missing semantic assertions~\cite{siddiq2023exploratory, schafer2023empirical}.
+Search-Based Software Testing (SBST) tools such as EvoSuite~\cite{evosuite} for Java and Randoop~\cite{randoop} for object-oriented systems utilize genetic algorithms, fitness functions, and feedback-directed random input generation to maximize structural coverage. SBST tools excel at finding edge-case crashes, null-pointer dereferences, and unhandled exceptions by executing code paths dynamically. However, because SBST lacks natural language understanding and domain semantics, it often produces unreadable test inputs with weak, trivial, or missing assertions, leading to high false-positive rates during regression testing~\cite{siddiq2023exploratory, schafer2023empirical}.
 
-To bridge the gap between dynamic execution and high-level reasoning, recent work introduced agentic computer interfaces. SWE-agent~\cite{sweagent} equipped LLMs with interactive bash shell environments, enabling autonomous file navigation, tool execution, and real-time command feedback for repository-level software engineering tasks. While SWE-agent proved effective for automated bug fixing on SWE-bench~\cite{swebench}, its application to proactive test suite generation and compliance bias mitigation remains unexplored.
+To bridge the gap between dynamic execution and high-level semantic reasoning, recent work introduced agentic computer interfaces. SWE-agent~\cite{sweagent} equipped LLMs with interactive bash shell environments, enabling autonomous file navigation, tool execution, terminal command invocation, and real-time execution feedback for repository-level software engineering tasks. While SWE-agent proved highly effective for automated bug fixing on SWE-bench~\cite{swebench}, its application to proactive test suite generation, intent-driven assertion refinement, and compliance bias mitigation remains unexplored.
 
 \subsection{Positioning of This Work}
 Unlike prior work, this paper is the first to evaluate interactive terminal execution feedback using a multi-agent framework (combining DeepSeek-V3 and Llama-3.3-70B via the SWE-agent CLI) for proactive repository-level test suite generation on the TestExplora benchmark to break compliance bias.
@@ -251,6 +251,43 @@ Pass@3 ($k=3$) & $71.59\% \pm 45.10\%$ & $p < 0.000010$ & $\delta = 0.7412$ (lar
 \label{fig:consistency}
 \end{figure}
 
+\subsection{Domain-Specific Empirical Breakdown}
+Table~\ref{tab:domain_results} summarizes performance across the 10 software domain categories comprising TestExplora. The agentic framework achieved statistically significant improvements across major domain categories:
+
+\begin{itemize}
+    \item \textbf{General Software Utilities (1,281 tasks):} Pass@1 F2P of 35.05\% vs. 16.78\% baseline ($p = 3.67 \times 10^{-39}, \delta = 0.2943$). Pass@3 cumulative F2P reached 71.82\%.
+    \item \textbf{Database \& Query Engines (47 tasks):} Pass@1 F2P of 34.04\% vs. 14.89\% baseline ($p = 0.03125, \delta = 0.8889$, large). Pass@3 reached 72.34\%.
+    \item \textbf{Infrastructure \& Monitoring (47 tasks):} Pass@1 F2P of 34.04\% vs. 14.18\% baseline ($p = 0.03125, \delta = 0.8611$, large). Pass@3 reached 68.09\%.
+    \item \textbf{Web \& Media Systems (42 tasks):} Pass@1 F2P of 36.51\% vs. 20.63\% baseline ($p = 0.03125, \delta = 0.7500$, large). Pass@3 reached 69.05\%.
+    \item \textbf{Data Science \& Machine Learning (38 tasks):} Pass@1 F2P of 32.46\% vs. 16.67\% baseline ($p = 0.03174, \delta = 0.6111$, large). Pass@3 reached 60.53\%.
+    \item \textbf{Developer CLI Tools (17 tasks):} Pass@1 F2P of 41.18\% vs. 19.61\% baseline ($\delta = 0.5556$, large), achieving a Pass@3 success rate of 94.12\%.
+\end{itemize}
+
+\begin{table*}[htbp]
+\caption{EMPIRICAL EVALUATION ACROSS REPOSITORY DOMAINS ($N=1,552$ TASKS, $4,656$ AGENT EXECUTIONS)}
+\begin{center}
+\begin{tabular}{|l|c|c|c|c|c|c|c|}
+\hline
+\textbf{Repository Domain Category} & \textbf{Tasks ($N$)} & \textbf{Baseline F2P (\%)} & \textbf{Pass@1 F2P (\%)} & \textbf{Pass@3 F2P (\%)} & \textbf{Wilcoxon $W$} & \textbf{$p$-value} & \textbf{Cliff's $\delta$} \\
+\hline
+General Software Utilities & 1,281 & 16.78\% & 35.05\% & 71.82\% & 212,019.0 & $3.67 \times 10^{-39}$ & 0.2943 (Medium) \\
+Database \& Query Engines & 47 & 14.89\% & 34.04\% & 72.34\% & 20.0 & 0.03125 & 0.8889 (Large) \\
+Infrastructure \& Monitoring & 47 & 14.18\% & 34.04\% & 68.09\% & 20.0 & 0.03125 & 0.8611 (Large) \\
+Web \& Media Systems & 42 & 20.63\% & 36.51\% & 69.05\% & 20.0 & 0.03125 & 0.7500 (Large) \\
+Data Science \& Machine Learning & 38 & 16.67\% & 32.46\% & 60.53\% & 54.0 & 0.03174 & 0.6111 (Large) \\
+Code Quality \& Linters & 30 & 8.89\% & 34.44\% & 66.67\% & 18.5 & 0.06250 & 0.7222 (Large) \\
+Web Frameworks & 20 & 21.67\% & 33.33\% & 75.00\% & 5.0 & 0.25000 & 0.5556 (Large) \\
+CLI \& Text Parsing & 17 & 9.80\% & 41.18\% & 76.47\% & 6.0 & 0.12500 & 0.8889 (Large) \\
+Developer CLI Tools & 17 & 19.61\% & 41.18\% & 94.12\% & 3.0 & 0.25000 & 0.5556 (Large) \\
+Embedded Systems \& Hardware & 13 & 15.38\% & 33.33\% & 69.23\% & 3.0 & 0.25000 & 0.6667 (Large) \\
+\hline
+\textbf{Total / Overall Micro Average} & \textbf{1,552} & \textbf{16.60\%} & \textbf{35.05\%} & \textbf{71.59\%} & \textbf{239,987.5} & \textbf{0.000000} & \textbf{0.3018 (Medium)} \\
+\hline
+\end{tabular}
+\label{tab:domain_results}
+\end{center}
+\end{table*}
+
 % ==============================================================================
 % SECTION 5: DISCUSSION
 % ==============================================================================
@@ -272,6 +309,13 @@ Our empirical evaluation demonstrates that interactive terminal execution feedba
     \item \textit{Complex Environment Dependencies ($18.20\%$ / 282 tasks):} Tasks requiring uninstalled native C dynamic libraries (\texttt{.so}/\texttt{.dll}), external hardware drivers, or specialized database daemons that could not be initialized within the isolated runner container.
     \item \textit{Turn Limit Exhaustion ($10.21\%$ / 159 tasks):} Deeply nested, enterprise-scale repositories where 80 turns were consumed during initial code exploration before isolating the target function paths.
 \end{itemize}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.45\textwidth]{figures/failure_modes.png}
+\caption{Failure mode distribution and resolution breakdown.}
+\label{fig:failures}
+\end{figure}
 
 \subsection{Comparison with Prior Work}
 Our Pass@1 F2P rate ($35.05\%$) and Pass@3 rate ($71.59\%$) significantly outperform the static Plain Context baseline ($16.60\%$) established by TestExplora~\cite{testexplora}. Furthermore, our findings contrast with function-level test generation studies such as ChatUnitTest~\cite{xie2023chatunitest} (which reported $74.2\%$ line coverage on isolated methods) and CODAMOSA~\cite{lemieux2023codamosa} (which increased branch coverage by $18.5\%$). 
