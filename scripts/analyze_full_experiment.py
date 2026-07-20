@@ -91,7 +91,13 @@ else:
         
     avg_agentic_f2p = np.mean(f2p_agentic_runs)
     avg_baseline_f2p = np.mean(f2p_baseline_runs)
+    
+    # Tính toán Pass@3 (Tỉ lệ sửa lỗi thành công ở ít nhất 1 trong 3 lượt thử)
+    task_pass_at_3 = df_full.groupby('task_id')['final_state'].apply(lambda s: (s == 'pass').any())
+    pass_at_3_rate = task_pass_at_3.mean() * 100
+    
     print(f"\n=> Agentic Average F2P (Pass@1 over K=3 runs): {avg_agentic_f2p:.2f}%")
+    print(f"=> Agentic Pass@3 Rate (Ít nhất 1/3 lần thành công): {pass_at_3_rate:.2f}%")
     print(f"=> Baseline Average F2P: {avg_baseline_f2p:.2f}%")
     
     # 5. Phân tích thống kê cấp Repository (Wilcoxon Signed-Rank Test)
@@ -127,10 +133,7 @@ else:
     df_compare = pd.merge(df_repo_agent, df_repo_base, on=['repo', 'sample_index'], suffixes=('_agent', '_base'))
     
     # Chạy Wilcoxon signed-rank test (one-tailed: Agentic > Baseline)
-    # Do scipy.stats.wilcoxon thực hiện two-sided mặc định, ta chỉ định alternative='greater'
     diff = df_compare['f2p_agent'] - df_compare['f2p_base']
-    
-    # Loại bỏ các cặp có hiệu bằng 0 (vì Wilcoxon signed-rank test sẽ bỏ qua chúng)
     non_zero_diff = diff[diff != 0]
     
     if len(non_zero_diff) > 0:
@@ -169,7 +172,8 @@ else:
         
     # 7. Lưu kết quả vào results/summary.csv
     summary_df = pd.DataFrame([
-        {"Metric": "Agentic_F2P_Avg", "Value": f"{avg_agentic_f2p:.2f}%"},
+        {"Metric": "Agentic_F2P_Avg_Pass@1", "Value": f"{avg_agentic_f2p:.2f}%"},
+        {"Metric": "Agentic_F2P_Pass@3", "Value": f"{pass_at_3_rate:.2f}%"},
         {"Metric": "Baseline_F2P_Avg", "Value": f"{avg_baseline_f2p:.2f}%"},
         {"Metric": "N_Observations", "Value": len(df_compare)},
         {"Metric": "p-value", "Value": f"{p_val:.6f}"},

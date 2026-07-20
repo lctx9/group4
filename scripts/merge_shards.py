@@ -4,13 +4,19 @@ import os
 
 print("--- KHỞI ĐỘNG GỘP CÁC PHÂN MẢNH KẾT QUẢ THỰC NGHIỆM ---")
 
-# Tìm toàn bộ các file phân mảnh có đuôi csv trong thư mục results
-raw_files = glob.glob('results/full_llm_output_part*.csv')
-# Loại bỏ file kết quả tổng hợp chính nếu trùng tên
-files = [f for f in raw_files if os.path.basename(f) != 'full_llm_output.csv']
+# Tìm toàn bộ các file phân mảnh (ưu tiên index*.csv của đợt chạy K=3)
+raw_index_files = glob.glob('results/index*.csv')
+ignored_filenames = {'full_llm_output.csv', 'pilot_llm_output.csv', 'pilot_llm_output_checkpoint.csv', 'summary.csv', 'full_llm_output_checkpoint.csv'}
+
+files = [f for f in raw_index_files if os.path.basename(f) not in ignored_filenames]
 
 if not files:
-    print("❌ Không tìm thấy phân mảnh kết quả nào có dạng: results/full_llm_output_part*.csv")
+    # Fallback sang full_llm_output_part*.csv nếu không có index*.csv
+    raw_part_files = glob.glob('results/full_llm_output_part*.csv')
+    files = [f for f in raw_part_files if os.path.basename(f) not in ignored_filenames]
+
+if not files:
+    print("❌ Không tìm thấy phân mảnh kết quả nào có dạng: results/index*.csv hoặc results/full_llm_output_part*.csv")
 else:
     print(f"🔍 Tìm thấy {len(files)} phân mảnh kết quả: {files}")
     dfs = []
