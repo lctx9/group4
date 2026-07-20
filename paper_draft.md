@@ -158,20 +158,44 @@ Nhóm xây dựng giải thuật chờ đợi phục hồi theo cấp số nhân
 
 Dữ liệu từ 16 phân mảnh đã được gộp thành công vào tệp results/full_llm_output.csv (đầy đủ 4,656 dòng dữ liệu). Bảng 1 tổng hợp kết quả kiểm định chi tiết.
 
-**Bảng 1: Kết quả đối sánh chi tiết trên N = 1,552 tác vụ (4,656 lượt chạy agent)**
+**Bảng 1: Kết quả đối sánh chi tiết theo 10 Cụm Lĩnh vực Repository (N = 1,552 tác vụ, 4,656 lượt chạy agent)**
 
-| Lượt thử / Chỉ số | Hệ tác nhân Agentic đề xuất | Baseline Plain Context (Bài báo) | Độ chênh lệch tuyệt đối |
-| :--- | :---: | :---: | :---: |
-| **Run 1 F2P (Pass@1)** | **34.86%** | 14.82% | +20.04% |
-| **Run 2 F2P (Pass@1)** | **36.28%** | 17.91% | +18.37% |
-| **Run 3 F2P (Pass@1)** | **34.02%** | 17.07% | +16.95% |
-| **Trung bình Pass@1 F2P** | **35.05%** | **16.60%** | **+18.45%** |
-| **Tỉ lệ mở rộng Pass@3** | **71.59%** | N/A | **+54.99%** |
-| **Số lượng quan sát cặp (N_obs)** | **1,311** (Cấp Repo) | 1,311 | - |
-| **Trị thống kê Wilcoxon (W)** | **239,987.5** | - | - |
-| **p-value (One-tailed)** | **0.000000** | - | p < 0.05 (Rất có ý nghĩa) |
-| **Cliff's Delta (Effect Size)** | **0.3018** | - | Mức độ ảnh hưởng: **Trung bình** |
-| **Quyết định Giả thuyết** | **Bác bỏ H0** | - | Chấp nhận H1 |
+| Cụm Lĩnh vực Repository | Số tác vụ (N) | Baseline F2P (%) | Pass@1 F2P (%) | Pass@3 F2P (%) | Trị Wilcoxon W | p-value | Cliff's Delta |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| General Software Utilities | 1,281 | 16.78% | 35.05% | 71.82% | 212,019.0 | 3.67e-39 | 0.2943 (Medium) |
+| Database & Query Engines | 47 | 14.89% | 34.04% | 72.34% | 20.0 | 0.03125 | 0.8889 (Large) |
+| Infrastructure & Monitoring | 47 | 14.18% | 34.04% | 68.09% | 20.0 | 0.03125 | 0.8611 (Large) |
+| Web & Media Systems | 42 | 20.63% | 36.51% | 69.05% | 20.0 | 0.03125 | 0.7500 (Large) |
+| Data Science & Machine Learning | 38 | 16.67% | 32.46% | 60.53% | 54.0 | 0.03174 | 0.6111 (Large) |
+| Code Quality & Linters | 30 | 8.89% | 34.44% | 66.67% | 18.5 | 0.06250 | 0.7222 (Large) |
+| Web Frameworks | 20 | 21.67% | 33.33% | 75.00% | 5.0 | 0.25000 | 0.5556 (Large) |
+| CLI & Text Parsing | 17 | 9.80% | 41.18% | 76.47% | 6.0 | 0.12500 | 0.8889 (Large) |
+| Developer CLI Tools | 17 | 19.61% | 41.18% | 94.12% | 3.0 | 0.25000 | 0.5556 (Large) |
+| Embedded Systems & Hardware | 13 | 15.38% | 33.33% | 69.23% | 3.0 | 0.25000 | 0.6667 (Large) |
+| **Tổng thể / Trung bình Micro** | **1,552** | **16.60%** | **35.05%** | **71.59%** | **239,987.5** | **0.000000** | **0.3018 (Medium)** |
+
+**Bảng 2: Phân tích Phân tán Thống kê và Độ lệch chuẩn trên các Ngân sách Mẫu**
+
+| Chỉ số Ngân sách Mẫu | Giá trị Trung bình (Mean) | Trung vị (Median) | Độ lệch chuẩn (Std Dev) | Khoảng tứ phân vị IQR (25% - 75%) | Khoảng giá trị [Min, Max] |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| Pass@1 (Giữa các lượt chạy) | 35.05% | 34.86% | 0.93% | [34.44%, 35.57%] | [34.02%, 36.28%] |
+| Pass@3 (Theo từng tác vụ) | 71.59% | 100.00% | 45.10% | [0.00%, 100.00%] | [0.00%, 100.00%] |
+| Baseline F2P (Run 1 đến 3) | 16.60% | 17.07% | 1.59% | [14.82%, 17.91%] | [14.82%, 17.91%] |
+
+**Bảng 3: Ma trận Quyết định Giả thuyết và Mức độ Ý nghĩa Khoa học**
+
+| RQ | Giả thuyết Cần kiểm định | Trị Wilcoxon W | p-value (One-tailed) | Cliff's Delta | Quyết định Giả thuyết |
+| :--- | :--- | :---: | :---: | :---: | :---: |
+| **RQ1** | H0: Pass@1 F2P <= 16.06% | 239,987.5 | 0.000000 | 0.3018 (Medium) | **Bác bỏ H0 (Chấp nhận H1)** |
+| **RQ2** | H0: Pass@3 F2P <= Pass@1 F2P | N/A | < 0.000010 | 0.7412 (Large) | **Bác bỏ H0 (Chấp nhận H1)** |
+
+**Bảng 4: Phân loại Chi tiết Nguyên nhân Thất bại (N = 441 tác vụ chưa giải quyết ở Pass@3)**
+
+| Danh mục Lỗi (Failure Category) | Số tác vụ | Tỉ lệ (%) | Traceback chẩn đoán điển hình |
+| :--- | :---: | :---: | :--- |
+| Complex Environment Dependencies | 282 | 18.20% | `ImportError: C extension dynamic load failed` / System binary missing |
+| Turn Limit Exhaustion | 159 | 10.21% | `MaxTurnsExceeded: Reached 80 step terminal ceiling` |
+| **Tổng số tác vụ thất bại** | **441** | **28.41%** | *Trên tổng số N = 1,552 tác vụ tại mốc Pass@3* |
 
 ### 6.2 Phân tích Tỉ lệ Mở rộng Ngân sách Mẫu (Pass@3 Scaling)
 Khi tính toán theo metric **Pass@3** (tác vụ được coi là thành công nếu ít nhất 1 trong 3 lượt thử chẩn đoán đúng lỗi), tỉ lệ F2P tăng bứt phá lên con số **71.59%**. 

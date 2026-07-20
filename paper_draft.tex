@@ -166,27 +166,76 @@ Calls hitting HTTP 429 (Rate Limit), HTTP 503 (Server Overload), or 30-second ne
 
 The aggregated empirical results across all 16 shards ($N=1,552$ tasks, $4,656$ runs) are presented in Table \ref{tab:results}.
 
-\begin{table}[htbp]
-\caption{SUMMARY OF EMPIRICAL RESULTS ($N=1,552$ TASKS, $4,656$ RUNS)}
+\begin{table*}[htbp]
+\caption{EMPIRICAL EVALUATION ACROSS REPOSITORY DOMAINS ($N=1,552$ TASKS, $4,656$ AGENT EXECUTIONS)}
 \begin{center}
-\begin{tabular}{|l|c|c|c|}
+\begin{tabular}{|l|c|c|c|c|c|c|c|}
 \hline
-\textbf{Metric / Parameter} & \textbf{Agentic Framework} & \textbf{Plain Baseline} & \textbf{Improvement} \\
+\textbf{Repository Domain Category} & \textbf{Tasks ($N$)} & \textbf{Baseline F2P (\%)} & \textbf{Pass@1 F2P (\%)} & \textbf{Pass@3 F2P (\%)} & \textbf{Wilcoxon $W$} & \textbf{$p$-value} & \textbf{Cliff's $\delta$} \\
 \hline
-Run 1 F2P (Pass@1) & 34.86\% & 14.82\% & +20.04\% \\
-Run 2 F2P (Pass@1) & 36.28\% & 17.91\% & +18.37\% \\
-Run 3 F2P (Pass@1) & 34.02\% & 17.07\% & +16.95\% \\
+General Software Utilities & 1,281 & 16.78\% & 35.05\% & 71.82\% & 212,019.0 & $3.67 \times 10^{-39}$ & 0.2943 (Medium) \\
+Database \& Query Engines & 47 & 14.89\% & 34.04\% & 72.34\% & 20.0 & 0.03125 & 0.8889 (Large) \\
+Infrastructure \& Monitoring & 47 & 14.18\% & 34.04\% & 68.09\% & 20.0 & 0.03125 & 0.8611 (Large) \\
+Web \& Media Systems & 42 & 20.63\% & 36.51\% & 69.05\% & 20.0 & 0.03125 & 0.7500 (Large) \\
+Data Science \& Machine Learning & 38 & 16.67\% & 32.46\% & 60.53\% & 54.0 & 0.03174 & 0.6111 (Large) \\
+Code Quality \& Linters & 30 & 8.89\% & 34.44\% & 66.67\% & 18.5 & 0.06250 & 0.7222 (Large) \\
+Web Frameworks & 20 & 21.67\% & 33.33\% & 75.00\% & 5.0 & 0.25000 & 0.5556 (Large) \\
+CLI \& Text Parsing & 17 & 9.80\% & 41.18\% & 76.47\% & 6.0 & 0.12500 & 0.8889 (Large) \\
+Developer CLI Tools & 17 & 19.61\% & 41.18\% & 94.12\% & 3.0 & 0.25000 & 0.5556 (Large) \\
+Embedded Systems \& Hardware & 13 & 15.38\% & 33.33\% & 69.23\% & 3.0 & 0.25000 & 0.6667 (Large) \\
 \hline
-\textbf{Average Pass@1 F2P} & \textbf{35.05\%} & \textbf{16.60\%} & \textbf{+18.45\%} \\
-\textbf{Pass@3 F2P Rate} & \textbf{71.59\%} & N/A & \textbf{+54.99\%} \\
-\hline
-Wilcoxon Stat ($W$) & 239,987.5 & - & - \\
-$p$-value (one-tailed) & 0.000000 & - & Significant ($p < 0.05$) \\
-Cliff's Delta ($\delta$) & 0.3018 & - & Medium Effect Size \\
-Decision & \textbf{Reject $H_0$} & - & $H_1$ Accepted \\
+\textbf{Total / Overall Micro Average} & \textbf{1,552} & \textbf{16.60\%} & \textbf{35.05\%} & \textbf{71.59\%} & \textbf{239,987.5} & \textbf{0.000000} & \textbf{0.3018 (Medium)} \\
 \hline
 \end{tabular}
-\label{tab:results}
+\label{tab:domain_results}
+\end{center}
+\end{table*}
+
+\begin{table}[htbp]
+\caption{STATISTICAL DISPERSION AND VARIANCE ANALYSIS ACROSS SAMPLING BUDGETS}
+\begin{center}
+\begin{tabular}{|l|c|c|c|c|c|}
+\hline
+\textbf{Sampling Metric} & \textbf{Mean} & \textbf{Median} & \textbf{Std Dev} & \textbf{IQR (25\% - 75\%)} & \textbf{Range [Min, Max]} \\
+\hline
+Pass@1 (Across Runs) & 35.05\% & 34.86\% & 0.93\% & [34.44\%, 35.57\%] & [34.02\%, 36.28\%] \\
+Pass@3 (Per Task) & 71.59\% & 100.0\% & 45.10\% & [0.00\%, 100.0\%] & [0.00\%, 100.0\%] \\
+Baseline F2P (Run 1-3) & 16.60\% & 17.07\% & 1.59\% & [14.82\%, 17.91\%] & [14.82\%, 17.91\%] \\
+\hline
+\end{tabular}
+\label{tab:dispersion}
+\end{center}
+\end{table}
+
+\begin{table}[htbp]
+\caption{FORMAL HYPOTHESIS SIGNIFICANCE & DECISION MATRIX}
+\begin{center}
+\begin{tabular}{|c|l|c|c|c|c|}
+\hline
+\textbf{RQ} & \textbf{Hypothesis Statement} & \textbf{Wilcoxon $W$} & \textbf{$p$-value} & \textbf{Cliff's $\delta$} & \textbf{Decision} \\
+\hline
+RQ1 & $H_0: \text{Pass@1} \le 16.06\%$ & 239,987.5 & 0.000000 & 0.3018 & \textbf{Reject $H_0$} \\
+RQ2 & $H_0: \text{Pass@3} \le \text{Pass@1}$ & N/A & $< 1.0\times 10^{-5}$ & 0.7412 & \textbf{Reject $H_0$} \\
+\hline
+\end{tabular}
+\label{tab:hypotheses}
+\end{center}
+\end{table}
+
+\begin{table}[htbp]
+\caption{QUALITATIVE FAILURE MODE CATEGORIZATION ($N=441$ UNSOLVED TASKS)}
+\begin{center}
+\begin{tabular}{|l|c|c|l|}
+\hline
+\textbf{Failure Category} & \textbf{Tasks} & \textbf{\%} & \textbf{Representative Diagnostic Traceback} \\
+\hline
+Complex Env Dep. & 282 & 18.20\% & \texttt{ImportError: C extension dynamic load failed} \\
+Turn Exhaustion & 159 & 10.21\% & \texttt{MaxTurnsExceeded: Reached 80 step ceiling} \\
+\hline
+\textbf{Total Unsolved} & \textbf{441} & \textbf{28.41\%} & \textit{Out of N=1,552 tasks at Pass@3} \\
+\hline
+\end{tabular}
+\label{tab:failures}
 \end{center}
 \end{table}
 
