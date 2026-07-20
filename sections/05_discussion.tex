@@ -1,12 +1,28 @@
 \section{Discussion}
 \label{sec:discussion}
 
-\subsection{Mechanisms Breaking Compliance Bias}
-Execution feedback signals from real-time \texttt{pytest} runs force LLMs to abandon initial compliance assumptions when runtime exceptions occur. Interactive boundary exploration over 80 turns allows the agent to construct adversarial test inputs that challenge implementation semantics.
+In this section, we contextualize our findings, compare our empirical results against prior literature, and outline practical implications for software engineering practitioners and researchers.
 
-\subsection{Failure Mode Analysis}
-Qualitative analysis of the 28.41\% unresolved tasks revealed two core failure modes:
+\subsection{Explanations of Main Findings and Error Patterns}
+Our empirical evaluation demonstrates that interactive terminal execution feedback increases the Fail-to-Pass (F2P) rate from $16.60\%$ (static baseline) to $35.05\%$ at Pass@1 and $71.59\%$ at Pass@3. This substantial performance leap stems from two observable mechanics:
+
 \begin{enumerate}
-    \item \textbf{Complex Environment Dependencies (18.20\%):} Repositories requiring native C dynamic libraries or database configurations missing from the runner image.
-    \item \textbf{Turn Limit Exhaustion (10.21\%):} Deeply nested repositories where 80 turns were consumed before finding target test paths.
+    \item \textbf{Dynamic Traceback Rejection of Compliance Bias:} In static prompting, models passively align test assertions with existing code implementations. Under our interactive paradigm, running \texttt{pytest} within the SWE-agent CLI exposes runtime exceptions (\texttt{AssertionError}, \texttt{TypeError}, \texttt{AttributeError}). These dynamic execution signals force the agent to abandon initial compliance assumptions and iteratively generate adversarial test inputs that challenge implementation defects.
+    \item \textbf{Exploratory Boundary Traversal:} The multi-turn execution budget (up to 80 turns) provides the agent with an exploratory sandbox to inspect directory hierarchies, trace dependencies, and test boundary conditions across multi-file repositories.
 \end{enumerate}
+
+\textbf{Analysis of Unsolved Cases:} Despite achieving a $71.59\%$ Pass@3 success rate, $28.41\%$ ($441$ tasks) remained unresolved. Our results suggest that performance on these hard cases may be attributed to two major failure patterns:
+\begin{itemize}
+    \item \textit{Complex Environment Dependencies ($18.20\%$ / 282 tasks):} Tasks requiring uninstalled native C dynamic libraries (\texttt{.so}/\texttt{.dll}), external hardware drivers, or specialized database daemons that could not be initialized within the isolated runner container.
+    \item \textit{Turn Limit Exhaustion ($10.21\%$ / 159 tasks):} Deeply nested, enterprise-scale repositories where 80 turns were consumed during initial code exploration before isolating the target function paths.
+\end{itemize}
+
+\subsection{Comparison with Prior Work}
+Our Pass@1 F2P rate ($35.05\%$) and Pass@3 rate ($71.59\%$) significantly outperform the static Plain Context baseline ($16.60\%$) established by TestExplora~\cite{testexplora}. Furthermore, our findings contrast with function-level test generation studies such as ChatUnitTest~\cite{xie2023chatunitest} (which reported $74.2\%$ line coverage on isolated methods) and CODAMOSA~\cite{lemieux2023codamosa} (which increased branch coverage by $18.5\%$). 
+
+The primary reason for this performance disparity lies in the benchmark objective: while prior SLR studies evaluated line or branch coverage on self-contained functions, TestExplora measures documentation-derived intent compliance at the repository level. Under static prompting, high line coverage often conceals compliance bias; our interactive agentic approach is the first to achieve over $70\%$ intent-compliant bug discovery on repository-level codebases without human issue reports.
+
+\subsection{Implications for Practitioners and Researchers}
+\textbf{For Software Testers and Developers:} Development teams should transition from static LLM auto-completion prompts to dynamic, execution-feedback testing agents. Interactive terminal loops allow automated agents to serve as active "red-team" testers that proactively hunt for logic bugs prior to code review.
+
+\textbf{When to Adopt This Approach:} This multi-agent terminal feedback framework is highly recommended for repository-level regression testing and CI/CD pipelines in standard Python environments. However, for systems with heavy native C/C++ dependencies or multi-node infrastructure, practitioners should provision pre-configured environment containers to avoid environmental execution failures.
