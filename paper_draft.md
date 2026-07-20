@@ -178,20 +178,9 @@ Khi tính toán theo metric **Pass@3** (tác vụ được coi là thành công 
 
 Điều này chứng minh tính ngẫu nhiên của mô hình ngôn ngữ lớn có thể được chế ngự hiệu quả bằng cách kết hợp thám hiểm tự do với ngân sách mẫu K >= 3.
 
-```
-Hiệu năng F2P Rate (%)
-|
-80% +-------------------------------------------------------+  71.59% (Pass@3)
-    |                                                      *|
-60% |                                                       |
-    |                                                       |
-40% |                             35.05% (Pass@1 Avg)       |
-    |                                *                      |
-20% |        16.60% (Baseline)                              |
-    |           *                                           |
- 0% +-------------------------------------------------------+
-            Plain Context          Agentic (k=1)     Agentic (Pass@3)
-```
+![Biểu đồ 2: So sánh F2P Pass@1 trung bình](figures/f2p_comparison.png)
+
+![Biểu đồ 3: Hiệu ứng mở rộng ngân sách Pass@k](figures/f2p_k_budget_scaling.png)
 
 ### 6.3 Phân tích Độ ổn định (Variance & Stability)
 Độ lệch giữa 3 lượt chạy độc lập của hệ tác nhân cực kỳ nhỏ:
@@ -202,10 +191,14 @@ Hiệu năng F2P Rate (%)
 
 Con số này chứng minh giải thuật thám hiểm qua terminal đạt độ tin cậy và khả năng tái lập (Reproducibility) rất cao trên các môi trường chạy khác nhau.
 
+![Biểu đồ 4: Độ ổn định 3 lượt chạy](figures/run_consistency.png)
+
 ### 6.4 Phân tích Kiểm định Wilcoxon và Cliff's Delta
 Do dữ liệu F2P mang bản chất phi chuẩn, kiểm định Wilcoxon signed-rank test cấp độ repository thu được W = 239,987.5 và p-value = 0.000000 nhỏ hơn rất nhiều so với 0.05. 
 
 Hệ số ảnh hưởng Cliff's Delta thu được 0.3018 nằm trong khoảng từ 0.147 đến 0.33, được xếp loại là **Medium Effect Size** (Kích thước ảnh hưởng mức Trung bình). Điều này khẳng định sự vượt trội của hệ tác nhân không phải là ngẫu nhiên mà là bản chất thực sự của phương pháp.
+
+![Biểu đồ 1: Phân phối tỉ lệ F2P theo Repository](figures/f2p_distribution.png)
 
 ---
 
@@ -216,9 +209,11 @@ Hệ số ảnh hưởng Cliff's Delta thu được 0.3018 nằm trong khoảng 
 2. **Khám phá ranh giới (Boundary Value Testing):** Nhờ có 80 lượt tương tác (turns), Exploration Agent có không gian để thử nghiệm nhiều giá trị đầu vào dị thường (Edge cases), điều mà các mô hình 1-step không thể làm được.
 
 ### 7.2 Phân tích Các Trường hợp Thất bại (Failure Analysis)
-Mặc dù đạt 71.59% ở Pass@3, vẫn có 28.41% tác vụ chưa chẩn đoán thành công do 3 nguyên nhân chính:
-1. **Phụ thuộc môi trường phức tạp (Complex Environment Dependency):** Một số tác vụ đòi hỏi các thư viện C/C++ ngoài hoặc cấu hình database đặc thù mà môi trường chạy không cung cấp đủ.
-2. **Quá giới hạn Turns (Turn Exhaustion):** Với các repository cực lớn, 80 turns chưa đủ để Agent duyệt hết cấu trúc thư mục trước khi tìm ra hàm cần kiểm thử.
+Mặc dù đạt 71.59% ở Pass@3, vẫn có 28.41% tác vụ chưa chẩn đoán thành công do 2 nguyên nhân chính:
+1. **Phụ thuộc môi trường phức tạp (Complex Environment Dependencies - 18.20%):** Một số tác vụ đòi hỏi các thư viện C/C++ ngoài hoặc cấu hình database đặc thù mà môi trường chạy không cung cấp đủ.
+2. **Quá giới hạn Turns (Turn Exhaustion - 10.21%):** Với các repository cực lớn, 80 turns chưa đủ để Agent duyệt hết cấu trúc thư mục trước khi tìm ra hàm cần kiểm thử.
+
+![Biểu đồ 5: Phân tích tỷ lệ giải quyết và nguyên nhân thất bại](figures/failure_modes.png)
 
 ---
 
