@@ -263,6 +263,13 @@ Table~\ref{tab:domain_results} summarizes performance across the 10 software dom
     \item \textbf{Developer CLI Tools (17 tasks):} Pass@1 F2P of 41.18\% vs. 19.61\% baseline ($\delta = 0.5556$, large), achieving a Pass@3 success rate of 94.12\%.
 \end{itemize}
 
+\begin{figure*}[htbp]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/domain_performance.png}
+\caption{Pass@1 vs. Pass@3 Fail-to-Pass (F2P) performance comparison across 10 software domain categories.}
+\label{fig:domain_perf}
+\end{figure*}
+
 \begin{table*}[htbp]
 \caption{EMPIRICAL EVALUATION ACROSS REPOSITORY DOMAINS ($N=1,552$ TASKS, $4,656$ AGENT EXECUTIONS)}
 \begin{center}
@@ -309,6 +316,13 @@ Our empirical evaluation demonstrates that interactive terminal execution feedba
     \item \textit{Complex Environment Dependencies ($18.20\%$ / 282 tasks):} Tasks requiring uninstalled native C dynamic libraries (\texttt{.so}/\texttt{.dll}), external hardware drivers, or specialized database daemons that could not be initialized within the isolated runner container.
     \item \textit{Turn Limit Exhaustion ($10.21\%$ / 159 tasks):} Deeply nested, enterprise-scale repositories where 80 turns were consumed during initial code exploration before isolating the target function paths.
 \end{itemize}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.45\textwidth]{figures/turn_distribution.png}
+\caption{Distribution of interaction turns consumed per exploration task.}
+\label{fig:turns}
+\end{figure}
 
 \begin{figure}[htbp]
 \centering

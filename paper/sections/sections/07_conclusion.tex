@@ -1,0 +1,13 @@
+\section{Conclusion and Future Work}
+\label{sec:conclusion}
+
+In this paper, we investigated whether interactive terminal execution feedback can overcome compliance bias in repository-level test suite generation. Regarding RQ1, we investigated the single-attempt ($k=1$) Fail-to-Pass (F2P) performance of our agentic framework against static baselines; results show that interactive terminal feedback yields an average F2P rate of $35.05\% \pm 0.93\%$ versus $16.60\% \pm 1.59\%$ ($p = 0.000000$, Cliff's $\delta = 0.3018$, medium). Regarding RQ2, we investigated sample budget scaling up to $K=3$ independent runs; results show that Pass@3 scales cumulative bug discovery to $71.59\% \pm 45.10\%$ ($p < 0.000010$, Cliff's $\delta = 0.7412$, large) while maintaining low run-to-run variance ($\text{Std Dev} = 0.93\%$).
+
+This is the first study to evaluate interactive multi-agent terminal feedback (combining DeepSeek-V3 and Llama-3.3-70B via the SWE-agent CLI) for proactive, documentation-derived repository test generation on the TestExplora benchmark.
+
+Future work could extend this research in three specific directions:
+\begin{enumerate}
+    \item Future work could investigate statically typed compiled languages (such as Java and C++) by containerizing build tools (e.g., Maven and CMake) within the interactive terminal execution loop.
+    \item Future work could investigate fine-tuning open-weights models (e.g., DeepSeek-R1) via Direct Preference Optimization (DPO) on terminal execution tracebacks to reduce the 80-turn exploration ceiling.
+    \item Future work could investigate automated environment dependency resolution by integrating Linux package managers (\texttt{apt}, \texttt{pip}) directly into the agent's interactive bash command set.
+\end{enumerate}
