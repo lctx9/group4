@@ -1,0 +1,82 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{url}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  columns=fullflexible
+}
+
+\begin{document}
+
+\title{Interactive Terminal Execution Feedback for Repository-Level Test Generation: An Empirical Study on TestExplora}
+
+\author{
+\IEEEauthorblockN{1\textsuperscript{st} Le Chi Tam}
+\IEEEauthorblockA{\textit{Department of Software Engineering} \\
+\textit{FPT University}\\
+Ho Chi Minh City, Vietnam \\
+tamlcse150000@fpt.edu.vn}
+\and
+\IEEEauthorblockN{2\textsuperscript{nd} Team Member Two}
+\IEEEauthorblockA{\textit{Department of Software Engineering} \\
+\textit{FPT University}\\
+Ho Chi Minh City, Vietnam \\
+member2@fpt.edu.vn}
+\and
+\IEEEauthorblockN{3\textsuperscript{rd} Team Member Three}
+\IEEEauthorblockA{\textit{Department of Software Engineering} \\
+\textit{FPT University}\\
+Ho Chi Minh City, Vietnam \\
+member3@fpt.edu.vn}
+\and
+\IEEEauthorblockN{4\textsuperscript{th} Team Member Four}
+\IEEEauthorblockA{\textit{Department of Software Engineering} \\
+\textit{FPT University}\\
+Ho Chi Minh City, Vietnam \\
+member4@fpt.edu.vn}
+}
+
+\maketitle
+
+\input{sections/00_abstract.tex}
+\input{sections/01_intro.tex}
+\input{sections/02_related.tex}
+\input{sections/03_method.tex}
+\input{sections/04_results.tex}
+\input{sections/05_discussion.tex}
+\input{sections/06_threats.tex}
+\input{sections/07_conclusion.tex}
+
+\begin{thebibliography}{1}
+\bibitem{myers2011art} G. J. Myers, C. Sandler, and T. Badgett, \textit{The Art of Software Testing}. John Wiley \& Sons, 2011.
+\bibitem{evosuite} G. Fraser and A. Arcuri, ``EvoSuite: automatic generation of test suites for Java classes,'' in \textit{Proc. ESEC/FSE}, 2011, pp. 416--419.
+\bibitem{randoop} C. Pacheco and M. D. Ernst, ``Randoop: feedback-directed random testing for Java,'' in \textit{Proc. OOPSLA}, 2007, pp. 815--816.
+\bibitem{swebench} C. E. Jimenez \textit{et al.}, ``SWE-bench: Can Language Models Resolve Real-World GitHub Issues?'' \textit{arXiv preprint arXiv:2310.06770}, 2023.
+\bibitem{docprompting} S. Zhou \textit{et al.}, ``DocPrompting: Generating Code from Natural Language Documentation,'' in \textit{Proc. FSE}, 2023.
+\bibitem{repobench} L. Liu \textit{et al.}, ``RepoBench: Benchmarking Repository-Level Code Auto-Completion System,'' \textit{arXiv preprint arXiv:2306.03091}, 2023.
+\bibitem{cse} M. Harman, ``Automated software engineering and artificial intelligence,'' \textit{IEEE Software}, 2012.
+\bibitem{bareiss2022code} A. Bareiß \textit{et al.}, ``Code Generation Tools for Software Testing: A Systematic Literature Review,'' \textit{IEEE Access}, 2022.
+\bibitem{lemieux2023codamosa} C. Lemieux \textit{et al.}, ``CODAMOSA: Escaping Coverage Plateaus in Test Generation with Pre-trained Large Language Models,'' in \textit{Proc. ICSE}, 2023, pp. 919--931.
+\bibitem{xie2023chatunitest} Z. Xie \textit{et al.}, ``ChatUnitTest: Automated Unit Test Generation for Java Methods via Large Language Models,'' \textit{arXiv preprint arXiv:2305.04207}, 2023.
+\bibitem{siddiq2023exploratory} M. L. Siddiq \textit{et al.}, ``An Exploratory Study of Code Smells in LLM-Generated Code,'' in \textit{Proc. ASE}, 2023.
+\bibitem{schafer2023empirical} M. Schäfer \textit{et al.}, ``An Empirical Evaluation of Using Large Language Models for Automated Unit Test Generation,'' \textit{IEEE Transactions on Software Engineering}, 2023.
+\bibitem{testexplora} Microsoft Research, ``TestExplora: Benchmarking Documentation-Derived Test Intent and Compliance Bias in Large Language Models,'' 2026.
+\bibitem{sweagent} J. Yang \textit{et al.}, ``SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering,'' \textit{arXiv preprint arXiv:2405.15793}, 2024.
+\bibitem{deepseek} DeepSeek AI, ``DeepSeek-V3 Technical Report,'' 2025.
+\bibitem{llama3} Meta AI, ``The Llama 3 Herd of Models,'' \textit{arXiv preprint arXiv:2407.21783}, 2024.
+\bibitem{cliffs} N. Cliff, ``Dominance statistics: Ordinal analyses to answer ordinal questions,'' \textit{Psychological Bulletin}, vol. 114, no. 3, p. 494, 1993.
+\end{thebibliography}
+
+\end{document}

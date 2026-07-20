@@ -1,0 +1,12 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{Mechanisms Breaking Compliance Bias}
+Execution feedback signals from real-time \texttt{pytest} runs force LLMs to abandon initial compliance assumptions when runtime exceptions occur. Interactive boundary exploration over 80 turns allows the agent to construct adversarial test inputs that challenge implementation semantics.
+
+\subsection{Failure Mode Analysis}
+Qualitative analysis of the 28.41\% unresolved tasks revealed two core failure modes:
+\begin{enumerate}
+    \item \textbf{Complex Environment Dependencies (18.20\%):} Repositories requiring native C dynamic libraries or database configurations missing from the runner image.
+    \item \textbf{Turn Limit Exhaustion (10.21\%):} Deeply nested repositories where 80 turns were consumed before finding target test paths.
+\end{enumerate}

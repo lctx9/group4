@@ -1,0 +1,23 @@
+\section{Methodology}
+\label{sec:method}
+
+\subsection{System Pipeline Architecture}
+Our architecture employs a Two-Agent Paradigm comprising an Exploration Agent and a Code Action Fixer Agent interacting with a sandboxed bash execution environment.
+
+\subsubsection{Exploration Agent (DeepSeek-V3)}
+The Exploration Agent interacts with the repository via the SWE-agent CLI terminal interface. Armed with directory navigation, file inspection, and shell execution capabilities, the agent executes up to 80 interaction turns per task. It drafts candidate tests, runs \texttt{pytest}, and captures dynamic traceback feedback to isolate discrepancies between actual behavior and documentation-derived intent.
+
+\subsubsection{Code Action Fixer Agent (Llama-3.3-70B)}
+Following exploration, the raw terminal execution logs and candidate test drafts are forwarded to the Code Action Fixer Agent. This agent performs logical deduction to clean syntax errors, structure assertions, and produce a standalone, executable Python test patch.
+
+\subsection{Evaluation Metrics and Statistical Formulation}
+We evaluate performance using the Fail-to-Pass (F2P) rate at the test suite level:
+\begin{equation}
+\text{F2P Rate} = \frac{\sum_{i=1}^{N} \mathbb{I}(\text{Test}_i(\text{Code}_{\text{buggy}}) = \text{Fail} \land \text{Test}_i(\text{Code}_{\text{fixed}}) = \text{Pass})}{N} \times 100\%
+\end{equation}
+Single-attempt performance is reported as Pass@1, while multi-attempt cumulative success across $K=3$ sampling runs is reported as Pass@3:
+\begin{equation}
+\text{Pass@}k = \frac{\sum_{i=1}^{N} \mathbb{I}\left( \exists j \in \{1,\dots,k\}: \text{F2P}_{i,j} = \text{Success} \right)}{N} \times 100\%
+\end{equation}
+
+Statistical significance is evaluated using the paired one-tailed Wilcoxon signed-rank test ($W$) at the repository level, alongside Cliff's Delta ($\delta$) for effect size magnitude.

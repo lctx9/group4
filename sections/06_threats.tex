@@ -1,0 +1,11 @@
+\section{Threats to Validity}
+\label{sec:threats}
+
+\subsection{Internal Validity}
+Internal threats related to API connectivity and rate limits were mitigated using exponential backoff retry mechanisms with jitter and 30-second timeouts.
+
+\subsection{External Validity}
+External threats to generalizability were addressed by evaluating across $N=1,552$ diverse tasks spanning 482 open-source Python repositories.
+
+\subsection{Construct Validity}
+Evaluation bias was eliminated by using the unbiased automated DocAgent oracle built into the TestExplora benchmark.

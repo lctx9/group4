@@ -1,0 +1,11 @@
+\section{Related Work}
+\label{sec:related}
+
+\subsection{Automated Test Suite Generation}
+Automated test generation has evolved through two primary paradigms: search-based software testing (SBST) and generative Large Language Models (LLMs). SBST techniques such as EvoSuite~\cite{evosuite} and Randoop~\cite{randoop} rely on evolutionary search algorithms and feedback-driven random inputs to maximize line and branch coverage. While SBST achieves high coverage numbers, it frequently produces unreadable assertions lacking domain intent semantics. Conversely, recent generative approaches using pre-trained code LLMs~\cite{bareiss2022code, lemieux2023codamosa, xie2023chatunitest} synthesize human-readable tests with meaningful assertions, but remain vulnerable to compliance bias when evaluated passively.
+
+\subsection{The TestExplora Benchmark and Compliance Bias}
+The TestExplora benchmark (Microsoft Research, 2026)~\cite{testexplora} established a new evaluation standard for repository-level test generation by pairing codebase implementations with documentation-derived intent validated via the automated DocAgent oracle. TestExplora identified \textit{compliance bias}: static LLM prompt completion generators achieve a Fail-to-Pass (F2P) rate of only 16.06\%, as models passively conform to buggy implementations.
+
+\subsection{Interactive Agent-Computer Interfaces in Software Engineering}
+Agentic computer interfaces such as SWE-agent~\cite{sweagent} equip language models with interactive shell environments, enabling multi-turn execution and file system interaction. While SWE-agent was designed for bug fixing, our work adapts multi-agent terminal feedback specifically to break compliance bias in proactive test generation.

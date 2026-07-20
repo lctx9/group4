@@ -1,0 +1,7 @@
+\begin{abstract}
+Automated test suite generation leveraging Large Language Models (LLMs) often suffers from compliance bias---generating test suites that pass statically without uncovering latent logic bugs. When evaluated on the state-of-the-art TestExplora benchmark under Plain static context, leading models achieve a Fail-to-Pass (F2P) rate ceiling of only 16.06\% at single-sample budget ($k=1$). In this paper, we propose an open-source multi-agent framework featuring an Agentic Exploration Agent (DeepSeek-V3 via SWE-agent CLI terminal) integrated with a Code Action Fixer Agent (Llama-3.3-70B). By leveraging real-time execution feedback loops (\texttt{pytest} tracebacks), our system proactively discovers latent repository-level bugs. Evaluated on $N=1,552$ tasks across 16 distributed shards over $K=3$ independent sampling runs ($4,656$ total agent executions), our system achieves an average Pass@1 F2P rate of 35.05\% (more than double the 16.60\% baseline) and a Pass@3 rate of 71.59\%. Non-parametric Wilcoxon signed-rank testing confirms statistical significance ($p = 0.000000 < 0.05$) with a medium effect size ($\text{Cliff's } \delta = 0.3018$).
+\end{abstract}
+
+\begin{IEEEkeywords}
+Automated Test Generation, Large Language Models, Agentic Exploration, Interactive Terminal Feedback, Compliance Bias, TestExplora Benchmark.
+\end{IEEEkeywords}
