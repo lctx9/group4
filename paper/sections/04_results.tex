@@ -1,11 +1,11 @@
 \section{Results}
 \label{sec:results}
 
-In this section, we present the empirical results answering our two research questions. Out of $4,656$ total agent invocations ($N=1,552$ tasks $\times 3$ runs), all 4,656 executions completed successfully ($0\%$ empty/invalid calls excluded due to our exponential backoff retry mechanism), yielding $N_{\text{obs}} = 1,311$ valid paired repository observations across the 482 open-source Python repositories.
+In this section, we present the empirical results answering our two research questions. Out of $4,656$ total agent invocations ($N=1,552$ tasks $\times 3$ runs), all 4,656 executions completed successfully (0\% empty/invalid calls excluded due to our exponential backoff retry mechanism), yielding $N_{\text{obs}} = 1,311$ valid paired repository observations across the 482 open-source Python repositories.
 
 \subsection{RQ1: Does interactive terminal execution feedback significantly improve the single-attempt ($k=1$) Fail-to-Pass (F2P) rate over the static Plain Context baseline on the TestExplora benchmark?}
 
-Table~\ref{tab:rq1_results} shows the Fail-to-Pass (F2P) scores for each evaluation strategy at single-sample budget ($k=1$). The mean Pass@1 F2P rate for Agentic Exploration is $35.05\% \pm 0.93\%$ ($35.05\%$ mean $\pm 0.93\%$ standard deviation), whereas the static Plain Context baseline achieves a mean F2P rate of $16.60\% \pm 1.59\%$. The median F2P rate for Agentic Exploration across repository observations is $34.86\%$ (IQR: [$34.44\%$, $35.57\%$]), compared to a median of $17.07\%$ (IQR: [$14.82\%$, $17.91\%$]) for the baseline.
+Table~\ref{tab:rq1_results} shows the Fail-to-Pass (F2P) scores for each evaluation strategy at single-sample budget ($k=1$). The mean Pass@1 F2P rate for Agentic Exploration is 35.05\% $\pm$ 0.93\% (35.05\% mean $\pm$ 0.93\% standard deviation), whereas the static Plain Context baseline achieves a mean F2P rate of 16.60\% $\pm$ 1.59\%. The median F2P rate for Agentic Exploration across repository observations is 34.86\% (IQR: [34.44\%, 35.57\%]), compared to a median of 17.07\% (IQR: [14.82\%, 17.91\%]) for the baseline.
 
 The paired one-tailed Wilcoxon signed-rank test yields $W = 239,987.5$, $p = 0.000000$, and Cliff's effect size $\delta = 0.3018$ (medium effect size). Therefore, we reject the null hypothesis $H_0$. Figure~\ref{fig:comparison} illustrates the comparison of mean scores, and Figure~\ref{fig:distribution} illustrates the distribution of F2P scores across conditions.
 
@@ -16,8 +16,8 @@ The paired one-tailed Wilcoxon signed-rank test yields $W = 239,987.5$, $p = 0.0
 \hline
 \textbf{Condition} & \textbf{Metric (mean $\pm$ std)} & \textbf{$p$-value} & \textbf{Effect size} \\
 \hline
-Agentic Exploration & $35.05\% \pm 0.93\%$ & $p = 0.000000$ & $\delta = 0.3018$ (medium) \\
-Plain Baseline & $16.60\% \pm 1.59\%$ & --- & --- \\
+Agentic Exploration & 35.05\% $\pm$ 0.93\% & $p = 0.000000$ & $\delta = 0.3018$ (medium) \\
+Plain Baseline & 16.60\% $\pm$ 1.59\% & --- & --- \\
 \hline
 \end{tabular}
 \label{tab:rq1_results}
@@ -40,9 +40,9 @@ Plain Baseline & $16.60\% \pm 1.59\%$ & --- & --- \\
 
 \subsection{RQ2: How does scaling the sample budget to $K=3$ independent runs (Pass@3) impact cumulative bug discovery performance and system stability?}
 
-Table~\ref{tab:rq2_results} shows the cumulative F2P rates across expanding sample budgets ($k=1, 2, 3$). At $k=1$ (Pass@1), the mean F2P rate is $35.05\% \pm 0.93\%$. Scaling to $k=2$ (Pass@2) increases the cumulative F2P rate to $58.12\% \pm 1.12\%$, and scaling to $k=3$ (Pass@3) yields a cumulative mean F2P rate of $71.59\% \pm 45.10\%$ ($71.59\%$ mean $\pm 45.10\%$ task-level standard deviation). The median Pass@3 score across individual tasks is $100.00\%$ (IQR: [$0.00\%$, $100.00\%$]).
+Table~\ref{tab:rq2_results} shows the cumulative F2P rates across expanding sample budgets ($k=1, 2, 3$). At $k=1$ (Pass@1), the mean F2P rate is 35.05\% $\pm$ 0.93\%. Scaling to $k=2$ (Pass@2) increases the cumulative F2P rate to 58.12\% $\pm$ 1.12\%, and scaling to $k=3$ (Pass@3) yields a cumulative mean F2P rate of 71.59\% $\pm$ 45.10\% (71.59\% mean $\pm$ 45.10\% task-level standard deviation). The median Pass@3 score across individual tasks is 100.00\% (IQR: [0.00\%, 100.00\%]).
 
-Comparing Pass@3 directly against Pass@1, the Wilcoxon signed-rank test yields $p < 0.000010$ with Cliff's $\delta = 0.7412$ (large effect size). Therefore, we reject the null hypothesis $H_0$. Across independent runs (Run 1: $34.86\%$, Run 2: $36.28\%$, Run 3: $34.02\%$), performance variance remains low ($\text{Std Dev} = 0.93\%$). Figure~\ref{fig:scaling} illustrates the budget scaling effect, and Figure~\ref{fig:consistency} illustrates run-to-run consistency.
+Comparing Pass@3 directly against Pass@1, the Wilcoxon signed-rank test yields $p < 0.000010$ with Cliff's $\delta = 0.7412$ (large effect size). Therefore, we reject the null hypothesis $H_0$. Across independent runs (Run 1: 34.86\%, Run 2: 36.28\%, Run 3: 34.02\%), performance variance remains low ($\text{Std Dev} = 0.93\%$). Figure~\ref{fig:scaling} illustrates the budget scaling effect, and Figure~\ref{fig:consistency} illustrates run-to-run consistency.
 
 \begin{table}[htbp]
 \caption{MULTI-SAMPLE BUDGET SCALING PERFORMANCE (RQ2: PASS@K METRICS)}
@@ -51,9 +51,9 @@ Comparing Pass@3 directly against Pass@1, the Wilcoxon signed-rank test yields $
 \hline
 \textbf{Condition} & \textbf{Metric (mean $\pm$ std)} & \textbf{$p$-value} & \textbf{Effect size} \\
 \hline
-Pass@1 ($k=1$) & $35.05\% \pm 0.93\%$ & Baseline & Baseline \\
-Pass@2 ($k=2$) & $58.12\% \pm 1.12\%$ & $p < 0.000010$ & $\delta = 0.5210$ (large) \\
-Pass@3 ($k=3$) & $71.59\% \pm 45.10\%$ & $p < 0.000010$ & $\delta = 0.7412$ (large) \\
+Pass@1 ($k=1$) & 35.05\% $\pm$ 0.93\% & Baseline & Baseline \\
+Pass@2 ($k=2$) & 58.12\% $\pm$ 1.12\% & $p < 0.000010$ & $\delta = 0.5210$ (large) \\
+Pass@3 ($k=3$) & 71.59\% $\pm$ 45.10\% & $p < 0.000010$ & $\delta = 0.7412$ (large) \\
 \hline
 \end{tabular}
 \label{tab:rq2_results}
@@ -85,6 +85,13 @@ Table~\ref{tab:domain_results} summarizes performance across the 10 software dom
     \item \textbf{Data Science \& Machine Learning (38 tasks):} Pass@1 F2P of 32.46\% vs. 16.67\% baseline ($p = 0.03174, \delta = 0.6111$, large). Pass@3 reached 60.53\%.
     \item \textbf{Developer CLI Tools (17 tasks):} Pass@1 F2P of 41.18\% vs. 19.61\% baseline ($\delta = 0.5556$, large), achieving a Pass@3 success rate of 94.12\%.
 \end{itemize}
+
+\begin{figure*}[htbp]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/domain_performance.png}
+\caption{Pass@1 vs. Pass@3 Fail-to-Pass (F2P) performance comparison across 10 software domain categories.}
+\label{fig:domain_perf}
+\end{figure*}
 
 \begin{table*}[htbp]
 \caption{EMPIRICAL EVALUATION ACROSS REPOSITORY DOMAINS ($N=1,552$ TASKS, $4,656$ AGENT EXECUTIONS)}

@@ -1,26 +1,20 @@
 \section{Threats to Validity}
 \label{sec:threats}
 
-In this section, we discuss potential threats to the validity of our empirical study and describe the specific mitigation strategies implemented during our experiment.
+In this section, we discuss potential threats to validity that may have influenced our evaluation, along with the specific mitigation strategies implemented.
 
 \subsection{Internal Validity}
-\begin{itemize}
-    \item \textbf{LLM Stochasticity and Network Disruption:} Temperature sampling randomness and intermittent OpenRouter API disruptions (HTTP 429 rate limits, HTTP 503 server overloads, 30-second network timeouts) could introduce non-deterministic execution failures. We mitigated this threat by fixing model temperatures to $\text{temperature}=0.0$, implementing an exponential backoff retry mechanism with randomized jitter ($t_{\text{wait}} = 2^{\text{attempt}} + \text{Uniform}(0, 1)$ seconds, up to 5 retries), and averaging results across $K=3$ independent sampling runs.
-    \item \textbf{Prompt Consistency:} Differences in system prompts across agent roles could introduce unobserved prompt engineering bias. We mitigated this by holding system prompts strictly constant across all $4,656$ agent executions and enforcing zero temperature during inference.
-\end{itemize}
+\textit{Are there factors that might affect the internal correctness of our evaluation results?}
+Randomness in LLM temperature sampling and network instability across OpenRouter API endpoints (HTTP 429 rate limits, HTTP 503 server overloads, 30-second execution timeouts) could introduce non-deterministic execution failures. To mitigate this threat, we fixed model temperatures to $\text{temperature}=0.0$, enforced strict 30-second command execution timeouts, and engineered an exponential backoff retry mechanism with randomized jitter ($t_{\text{wait}} = 2^{\text{attempt}} + \text{Uniform}(0, 1)$ seconds, up to 5 retries). Furthermore, to prevent prompt engineering bias across agent roles, system prompts were held strictly constant across all $4,656$ agent executions.
 
 \subsection{External Validity}
-\begin{itemize}
-    \item \textbf{Generalizability Across Programming Languages:} Our evaluation focused exclusively on Python repositories within the TestExplora benchmark, which may limit generalizability to statically typed compiled languages (e.g., Java, C++). We mitigated this by selecting $N=1,552$ diverse tasks spanning 482 distinct open-source repositories across 10 broad software domain categories (web frameworks, database engines, data science, infrastructure monitoring).
-    \item \textbf{Model Specificity:} Experimental findings might be tied to specific LLM choices (DeepSeek-V3 and Llama-3.3-70B). We mitigated this by evaluating open-access, state-of-the-art weights via OpenRouter rather than proprietary closed models, ensuring open replication.
-\end{itemize}
+\textit{To what extent can we generalize the findings of our investigation?}
+Our evaluation focused on Python repositories within the TestExplora benchmark, which may limit immediate generalizability to statically typed compiled languages (such as Java or C++). To mitigate this threat, we evaluated $N=1,552$ diverse tasks spanning 482 distinct open-source repositories across 10 broad software domain categories (e.g., database query engines, web frameworks, data science/ML tools, and infrastructure monitoring). Additionally, to avoid vendor-specific model bias, we utilized open-access state-of-the-art models (DeepSeek-V3 and Llama-3.3-70B) via standard API endpoints.
 
 \subsection{Construct Validity}
-\begin{itemize}
-    \item \textbf{Accuracy of Intent-Derived Test Oracles:} Measuring test suite quality via automated metrics could misrepresent human developer intent. We mitigated this by adopting the Fail-to-Pass (F2P) rate metric validated by Microsoft TestExplora's automated \textit{DocAgent} oracle, which strictly evaluates whether candidate tests fail on defective code and pass on fixed implementations.
-\end{itemize}
+\textit{Do our evaluation metrics accurately capture intended test suite quality?}
+Evaluating test suite quality solely through structural code coverage could misrepresent true failure detection capabilities. To mitigate this threat, we adopted the Fail-to-Pass (F2P) rate metric validated by Microsoft TestExplora's automated \textit{DocAgent} oracle, which strictly requires that a valid test suite must fail on defective code (proving defect detection) and pass on corrected implementations (proving assertion correctness).
 
 \subsection{Conclusion Validity}
-\begin{itemize}
-    \item \textbf{Statistical Power and Non-Normal Dispersion:} Applying parametric statistical tests to skewed repository-level F2P distributions could inflate Type I error rates. We mitigated this by utilizing non-parametric paired one-tailed Wilcoxon signed-rank tests ($W$) at the repository observation level ($N_{\text{obs}} = 1,311$) alongside Cliff's Delta ($\delta$) effect size measurements, avoiding parametric normality assumptions.
-\end{itemize}
+\textit{Are our statistical conclusions sound and resilient to non-normal dispersion?}
+Applying parametric statistical tests to non-normally distributed repository-level F2P scores could inflate Type I error rates. To mitigate this threat, we employed non-parametric paired one-tailed Wilcoxon signed-rank tests ($W$) at the repository observation level ($N_{\text{obs}} = 1,311$) alongside Cliff's Delta ($\delta$) effect size measurements, avoiding parametric normality assumptions.
