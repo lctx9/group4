@@ -1,7 +1,10 @@
 # Ignored files
-*.pdf
 .venv/
 __pycache__/
 *.log
 *.parquet
 *checkpoint*.csv
+
+# Allow tracked final PDFs
+!paper/output/*.pdf
+!presentation/*.pdf
