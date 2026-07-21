@@ -1,0 +1,74 @@
+\section{Multi-Agent Terminal Feedback Framework}
+\label{sec:method}
+
+This section describes our open-source multi-agent framework for proactive repository-level test suite generation through interactive terminal execution feedback. Figure~\ref{fig:workflow} overviews our approach. At the core of the framework is the integration of an interactive bash shell interface (SWE-agent CLI) that converts documentation-derived intent into real-time \texttt{pytest} execution signals.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.45\textwidth]{figures/failure_modes.png}
+\caption{System architecture and multi-agent interaction workflow.}
+\label{fig:workflow}
+\end{figure}
+
+Our framework operates at the repository level, deriving test suites that validate system semantics across multi-file codebases. We now describe the dataset, agent roles, prompts, execution pipeline, metrics, and statistical analysis plan.
+
+\subsection{Dataset and Benchmark Specifications}
+\label{subsec:dataset}
+We evaluate our system on the \textit{TestExplora} benchmark~\cite{testexplora}, a state-of-the-art dataset for documentation-derived test generation hosted on GitHub (\url{https://github.com/microsoft/TestExplora}). The benchmark comprises $N=1,552$ unique tasks across 482 public Python repositories created post-2023 to prevent data contamination in pre-trained LLMs. Each task provides a defective codebase snapshot paired with documentation-derived intent validated via the automated \textit{DocAgent} oracle. 
+
+To evaluate the complete dataset without domain sampling bias, we included all $N=1,552$ tasks. The tasks span 10 software domain categories, including General Software Utilities (1,281 tasks), Database Engines (47 tasks), Infrastructure Monitoring (47 tasks), Web Systems (42 tasks), Data Science/ML (38 tasks), and Linters (30 tasks).
+
+\subsection{Multi-Agent Architecture and Terminal Interface}
+\label{subsec:setup}
+Our system implements a Two-Agent Paradigm using OpenRouter API endpoints:
+\begin{enumerate}
+    \item \textbf{Exploration Agent:} Powered by \texttt{DeepSeek-V3} (\texttt{deepseek/deepseek-chat:free}) with $\text{temperature}=0.0$ and $\text{max\_tokens}=4096$, operating via the SWE-agent CLI bash terminal interface for up to 80 interaction turns per task.
+    \item \textbf{Code Action Fixer Agent:} Powered by \texttt{Llama-3.3-70B-Instruct} (\texttt{meta-llama/llama-3.3-70b-instruct:free}) with $\text{temperature}=0.0$ and $\text{max\_tokens}=4096$, performing logical deduction to clean terminal logs and synthesize standalone Python test patches.
+\end{enumerate}
+
+Listings~\ref{lst:prompt_explore} and~\ref{lst:prompt_fixer} present the system prompts for both agents.
+
+\begin{lstlisting}[caption={System Prompt for Exploration Agent}, label={lst:prompt_explore}]
+You are an expert autonomous software testing agent equipped with an interactive bash terminal.
+Your task is to proactively discover latent bugs in the given Python repository based on documentation intent.
+Instructions:
+1. Explore the codebase using directory navigation and file viewing commands.
+2. Draft candidate unit tests and execute pytest to capture runtime execution logs.
+3. Observe tracebacks, identify compliance biases, and write adversarial test inputs.
+4. Continue iterating until you isolate clear failing behavior on the buggy implementation.
+\end{lstlisting}
+
+\begin{lstlisting}[caption={System Prompt for Code Action Fixer Agent}, label={lst:prompt_fixer}]
+Below is the execution log and candidate test draft produced by the exploration agent.
+Analyze the execution log carefully. Your task is to refine and generate a clean, standalone Python test suite patch.
+Requirements:
+1. Ensure assertions directly capture the documentation intent.
+2. Fix syntax errors and invalid test setups.
+3. Output ONLY valid executable Python code for the final test suite.
+\end{lstlisting}
+
+\subsection{Fault Recovery and Parallel Distribution Pipeline}
+\label{subsec:pipeline}
+To process $4,656$ total agent runs reliably ($N=1,552$ tasks $\times 3$ runs), we engineered a 16-shard round-robin distribution pipeline: $\text{Task}_i \in \text{Shard}_k \iff i \pmod{16} = k$. To handle API rate limits (HTTP 429), server overloads (HTTP 503), and connection dropouts, we implemented an exponential backoff retry mechanism with randomized jitter: $t_{\text{wait}} = 2^{\text{attempt}} + \text{Uniform}(0, 1)$ seconds (up to 5 retries). Terminal command executions were constrained by a 30-second hard timeout.
+
+Our replication package, including datasets, prompts, scripts, and raw execution logs, is publicly available on GitHub at \url{https://github.com/lctx9/group4}.
+
+\subsection{Evaluation Metrics}
+\label{subsec:metrics}
+We evaluate test suite quality using the Fail-to-Pass (F2P) rate metric defined by TestExplora~\cite{testexplora}:
+\begin{equation}
+\text{F2P Rate} = \frac{\sum_{i=1}^{N} \mathbb{I}(\text{Test}_i(\text{Code}_{\text{buggy}}) = \text{Fail} \land \text{Test}_i(\text{Code}_{\text{fixed}}) = \text{Pass})}{N} \times 100\%
+\end{equation}
+A test suite achieves F2P success if and only if it fails on defective code (proving bug detection) and passes on corrected code (proving assertion validity). Single-run performance is reported as Pass@1. Multi-attempt cumulative success across $K=3$ independent sampling runs is evaluated as Pass@3:
+\begin{equation}
+\text{Pass@}k = \frac{\sum_{i=1}^{N} \mathbb{I}\left( \exists j \in \{1,\dots,k\}: \text{F2P}_{i,j} = \text{Success} \right)}{N} \times 100\%
+\end{equation}
+The static Plain Context baseline threshold is set to 16.06\%, established by TestExplora~\cite{testexplora}.
+
+\subsection{Statistical Analysis Plan}
+\label{subsec:stat}
+Following standard guidelines for statistical testing in software engineering~\cite{arcuri2011practical}, we employ non-parametric tests due to the non-normal distribution of repository F2P rates:
+\begin{itemize}
+    \item \textbf{Statistical Hypothesis Test:} Paired one-tailed Wilcoxon signed-rank test ($W$) evaluated at the repository level ($N_{\text{obs}} = 1,311$) using \texttt{scipy.stats.wilcoxon} with significance threshold $\alpha = 0.05$.
+    \item \textbf{Effect Size Measurement:} Non-parametric Cliff's Delta ($\delta$) calculated over paired repository observations. Effect size magnitudes are interpreted according to standard thresholds~\cite{arcuri2011practical, cliffs}: Negligible ($|\delta| < 0.147$), Small ($0.147 \le |\delta| < 0.33$), Medium ($0.33 \le |\delta| < 0.474$), and Large ($|\delta| \ge 0.474$).
+\end{itemize}

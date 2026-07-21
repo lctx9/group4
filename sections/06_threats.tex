@@ -1,0 +1,20 @@
+\section{Threats to Validity}
+\label{sec:threats}
+
+In this section, we discuss potential threats to validity that may have influenced our evaluation, along with the specific mitigation strategies implemented.
+
+\subsection{Internal Validity}
+\textit{Are there factors that might affect the internal correctness of our evaluation results?}
+Randomness in LLM temperature sampling and network instability across OpenRouter API endpoints (HTTP 429 rate limits, HTTP 503 server overloads, 30-second execution timeouts) could introduce non-deterministic execution failures. To mitigate this threat, we fixed model temperatures to $\text{temperature}=0.0$, enforced strict 30-second command execution timeouts, and engineered an exponential backoff retry mechanism with randomized jitter ($t_{\text{wait}} = 2^{\text{attempt}} + \text{Uniform}(0, 1)$ seconds, up to 5 retries). Furthermore, to prevent prompt engineering bias across agent roles, system prompts were held strictly constant across all $4,656$ agent executions.
+
+\subsection{External Validity}
+\textit{To what extent can we generalize the findings of our investigation?}
+Our evaluation focused on Python repositories within the TestExplora benchmark, which may limit immediate generalizability to statically typed compiled languages (such as Java or C++). To mitigate this threat, we evaluated $N=1,552$ diverse tasks spanning 482 distinct open-source repositories across 10 broad software domain categories (e.g., database query engines, web frameworks, data science/ML tools, and infrastructure monitoring). Additionally, to avoid vendor-specific model bias, we utilized open-access state-of-the-art models (DeepSeek-V3 and Llama-3.3-70B) via standard API endpoints.
+
+\subsection{Construct Validity}
+\textit{Do our evaluation metrics accurately capture intended test suite quality?}
+Evaluating test suite quality solely through structural code coverage could misrepresent true failure detection capabilities. To mitigate this threat, we adopted the Fail-to-Pass (F2P) rate metric validated by Microsoft TestExplora's automated \textit{DocAgent} oracle, which strictly requires that a valid test suite must fail on defective code (proving defect detection) and pass on corrected implementations (proving assertion correctness).
+
+\subsection{Conclusion Validity}
+\textit{Are our statistical conclusions sound and resilient to non-normal dispersion?}
+Applying parametric statistical tests to non-normally distributed repository-level F2P scores could inflate Type I error rates. To mitigate this threat, we employed non-parametric paired one-tailed Wilcoxon signed-rank tests ($W$) at the repository observation level ($N_{\text{obs}} = 1,311$) alongside Cliff's Delta ($\delta$) effect size measurements, avoiding parametric normality assumptions.
