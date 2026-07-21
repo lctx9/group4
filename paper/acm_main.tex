@@ -1,0 +1,80 @@
+\documentclass[sigconf,screen]{acmart}
+
+% Quyen ban quyen ACM & thong tin hoi nghi
+\acmConference[ESEC/FSE 2026]{ACM International Conference on the Foundations of Software Engineering}{July 2026}{Vietnam}
+\settopmatter{printacmref=true}
+
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\lstset{
+  basicstyle=\fontsize{7.5}{9}\ttfamily,
+  breaklines=true,
+  breakatwhitespace=false,
+  columns=fullflexible,
+  frame=single,
+  keepspaces=true,
+  showstringspaces=false,
+  xleftmargin=0pt,
+  xrightmargin=0pt
+}
+
+\begin{document}
+
+\title{Interactive Terminal Execution Feedback for Repository-Level Test Generation: An Empirical Study on TestExplora}
+
+\author{Le Chi Tam}
+\email{tamlcse190322@fpt.edu.vn}
+\affiliation{%
+  \institution{FPT University}
+  \city{Danang}
+  \country{Vietnam}
+}
+
+\author{Le Tran Gia Huy}
+\email{huyltgse193344@fpt.edu.vn}
+\affiliation{%
+  \institution{FPT University}
+  \city{Danang}
+  \country{Vietnam}
+}
+
+\author{Nguyen Tien Phu}
+\email{phuntse190131@fpt.edu.vn}
+\affiliation{%
+  \institution{FPT University}
+  \city{Danang}
+  \country{Vietnam}
+}
+
+\author{Truong Van An}
+\email{antvse194268@fpt.edu.vn}
+\affiliation{%
+  \institution{FPT University}
+  \city{Danang}
+  \country{Vietnam}
+}
+
+% Trong ACM: Abstract & Keywords dat TRUOC \maketitle
+\begin{abstract}
+\input{sections/00_abstract}
+\end{abstract}
+
+\keywords{large language models, unit test generation, interactive terminal feedback, compliance bias, empirical study}
+
+\maketitle
+
+\input{sections/01_intro}
+\input{sections/02_related}
+\input{sections/03_method}
+\input{sections/04_results}
+\input{sections/05_discussion}
+\input{sections/06_threats}
+\input{sections/07_conclusion}
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{references}
+
+\end{document}
