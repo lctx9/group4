@@ -45,10 +45,10 @@ OPENROUTER_KEY = os.getenv("OPENROUTER_API_KEY")
 OPENROUTER_BASE = os.getenv("OPENROUTER_API_BASE", "https://openrouter.ai/api/v1")
 
 # Exploration Agent (Lượt 1)
-EXPLORATION_MODEL = os.getenv("EXPLORATION_MODEL_NAME", "deepseek/deepseek-chat:free")
+EXPLORATION_MODEL = os.getenv("EXPLORATION_MODEL_NAME", "deepseek/deepseek-chat")
 
 # Code Action Fixer Agent (Lượt 2)
-FIXER_MODEL = os.getenv("FIXER_MODEL_NAME", "meta-llama/llama-3.3-70b-instruct:free")
+FIXER_MODEL = os.getenv("FIXER_MODEL_NAME", "meta-llama/llama-3.3-70b-instruct")
 
 # Chế độ chạy: Mock nếu thiếu key
 IS_MOCK = not OPENROUTER_KEY

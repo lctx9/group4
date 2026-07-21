@@ -12,8 +12,8 @@ print("--- KHỞI ĐỘNG KIỂM TRA API (OPENROUTER) ---")
 
 openrouter_key = os.getenv("OPENROUTER_API_KEY")
 openrouter_base = os.getenv("OPENROUTER_API_BASE", "https://openrouter.ai/api/v1")
-exploration_model = os.getenv("EXPLORATION_MODEL_NAME", "deepseek/deepseek-chat:free")
-fixer_model = os.getenv("FIXER_MODEL_NAME", "meta-llama/llama-3.3-70b-instruct:free")
+exploration_model = os.getenv("EXPLORATION_MODEL_NAME", "deepseek/deepseek-chat")
+fixer_model = os.getenv("FIXER_MODEL_NAME", "meta-llama/llama-3.3-70b-instruct")
 
 if not openrouter_key:
     print("❌ Chưa cấu hình OPENROUTER_API_KEY!")

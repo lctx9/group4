@@ -13,8 +13,8 @@ To evaluate the complete dataset without domain sampling bias, we included all $
 \label{subsec:setup}
 Our system implements a Two-Agent Paradigm using OpenRouter API endpoints:
 \begin{enumerate}
-    \item \textbf{Exploration Agent:} Powered by \texttt{DeepSeek-V3} (\texttt{deepseek/deepseek-chat:free}) with $\text{temperature}=0.0$ and $\text{max\_tokens}=4096$, operating via the SWE-agent CLI bash terminal interface for up to 80 interaction turns per task.
-    \item \textbf{Code Action Fixer Agent:} Powered by \texttt{Llama-3.3-70B-Instruct} (\texttt{meta-llama/llama-3.3-70b-instruct:free}) with $\text{temperature}=0.0$ and $\text{max\_tokens}=4096$, performing logical deduction to clean terminal logs and synthesize standalone Python test patches.
+    \item \textbf{Exploration Agent:} Powered by \texttt{DeepSeek-V3} (\texttt{deepseek/deepseek-chat}) with $\text{temperature}=0.0$ and $\text{max\_tokens}=4096$, operating via the SWE-agent CLI bash terminal interface for up to 80 interaction turns per task.
+    \item \textbf{Code Action Fixer Agent:} Powered by \texttt{Llama-3.3-70B-Instruct} (\texttt{meta-llama/llama-3.3-70b-instruct}) with $\text{temperature}=0.0$ and $\text{max\_tokens}=4096$, performing logical deduction to clean terminal logs and synthesize standalone Python test patches.
 \end{enumerate}
 
 The System Prompts for both agents are specified below:
@@ -40,7 +40,7 @@ Requirements:
 
 \textbf{Execution Pipeline:} Input task $\rightarrow$ 16-Shard Round-Robin Distribution ($\text{Task}_i \in \text{Shard}_k \iff i \pmod{16} = k$) $\rightarrow$ Exploration Agent SWE-agent terminal execution (80 turns) $\rightarrow$ Execution log extraction $\rightarrow$ Code Action Fixer synthesis $\rightarrow$ DocAgent Oracle verdict evaluation.
 
-\textbf{Edge Case and Fault Handling:} To handle API rate limits (HTTP 429), server overloads (HTTP 503), and connection dropouts, we engineered an exponential backoff retry mechanism with randomized jitter: $t_{\text{wait}} = 2^{\text{attempt}} + \text{Uniform}(0, 1)$ seconds (up to 5 retries). Shell command executions were constrained by a 30-second hard timeout.
+\textbf{Edge Case, Cost, and Fault Handling:} To handle API rate limits (HTTP 429), server overloads (HTTP 503), and connection dropouts, we engineered an exponential backoff retry mechanism with randomized jitter: $t_{\text{wait}} = 2^{\text{attempt}} + \text{Uniform}(0, 1)$ seconds (up to 5 retries). Shell command executions were constrained by a 30-second hard timeout. The total execution cost for all 4,656 agent runs across $N=1,552$ tasks ($K=3$ runs) was approximately \$10--\$12 USD via paid OpenRouter API endpoints.
 
 Our replication package, including datasets, prompts, scripts, and raw results, is publicly available at: \url{https://github.com/lctx9/group4}.
 
