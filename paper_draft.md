@@ -10,18 +10,11 @@
 
 ## TÓM TẮT BÁO CÁO (ABSTRACT)
 
-Việc tự động sinh test suite bằng các mô hình ngôn ngữ lớn (LLM) hiện nay đang gặp phải một điểm nghẽn nghiêm trọng gọi là **Bẫy tuân thủ (Compliance Bias)**: các mô hình sinh code kiểm thử chỉ hoạt động theo dạng hoàn thành văn bản tĩnh (Plain Context), tạo ra các bộ test chạy luôn trôi chảy (Pass) trên mã nguồn có sẵn mà không có khả năng chủ động phát hiện ra các lỗi logic tiềm ẩn ở cấp độ repository. Trên benchmark chuẩn **TestExplora (Microsoft Research 2026)** ở kịch bản White Box tĩnh, mô hình mạnh nhất hiện nay cũng chỉ đạt tỉ lệ Chuyển lỗi sang Pass (**Fail-to-Pass Rate - F2P**) tối đa **16.06%** ở ngân sách mẫu đơn lẻ (k = 1).
+### Bản Tiếng Việt (Chuẩn 5 câu theo đúng quy định của Cô - ~140 từ):
+Kiểm thử tự động đóng vai trò sống còn nhưng cực kỳ tốn chi phí, chiếm tới 50% tổng ngân sách phát triển phần mềm. Chưa có nghiên cứu nào đánh giá cơ chế phản hồi thực thi qua terminal tương tác nhằm bẻ gãy bẫy tuân thủ (compliance bias) trong việc sinh test suite cấp repository. Chúng tôi đánh giá hệ tác nhân phối hợp kép kết hợp DeepSeek-V3 (qua SWE-agent CLI terminal) và Llama-3.3-70B trên 1,552 tác vụ Python thuộc benchmark TestExplora. Phương pháp đạt tỉ lệ Fail-to-Pass trung bình Pass@1 là 35.05% so với baseline tĩnh 16.60%, và đạt Pass@3 là 71.59% (kiểm định Wilcoxon p = 0.000000, hệ số ảnh hưởng Cliff's delta = 0.3018, mức trung bình). Kết quả chứng minh vòng lặp phản hồi thực thi thời gian thực giúp bẻ gãy hiệu quả bẫy tuân thủ, mở ra hướng sinh test phát hiện lỗi chủ động cho các hệ thống kiểm thử tự động.
 
-Nghiên cứu này đề xuất một giải pháp toàn diện dựa trên **Hệ tác nhân tự trị phối hợp kép (Two-Agent Paradigm)** tích hợp công cụ tương tác Terminal thực thời gian thực thông qua framework SWEAgent. Hệ thống gồm: 
-1. **Exploration Agent** (sử dụng DeepSeek-V3 qua OpenRouter) tự do chạy lệnh pytest, đọc log thực thi để dò tìm điểm yếu của mã nguồn qua vòng lặp phản hồi (Execution Feedback Loop); và 
-2. **Code Action Fixer** (sử dụng Llama-3.3-70B qua OpenRouter) suy luận chuyên sâu để tinh chỉnh bộ test suite hoàn chỉnh.
-
-Thực nghiệm diện rộng được tiến hành trên N = 1,552 tác vụ phức tạp thuộc 482 repositories Python public, được phân mảnh song song trên 16 máy (16 Shards) với ngân sách K = 3 lượt chạy độc lập (tổng cộng 4,656 lượt chạy agent). Kết quả thu được:
-1. **Hiệu năng Pass@1 trung bình:** Hệ tác nhân đạt tỉ lệ F2P trung bình **35.05%**, vượt trội hơn gấp đôi so với baseline tĩnh (**16.60%**).
-2. **Hiệu năng mở rộng Pass@3:** Tỉ lệ phát hiện lỗi ít nhất 1 trong 3 lượt thử đạt con số ấn tượng **71.59%**.
-3. **Ý nghĩa thống kê:** Kiểm định Wilcoxon một phía thu được p-value = 0.000000 < 0.05 với hệ số ảnh hưởng Cliff's Delta = 0.3018 (Mức độ ảnh hưởng Trung bình - Medium Effect Size).
-
-Kết quả này khẳng định cơ chế thám hiểm qua vòng lặp phản hồi thực thi thời gian thực có khả năng bẻ gãy bẫy tuân thủ của các mô hình LLM tĩnh, tạo ra bước ngoặt mới cho các hệ thống kiểm thử tự động chủ động.
+### English Abstract (Standard 5-Sentence IEEE/ACM Format - ~100 words):
+Automated test generation remains essential yet labor-intensive, consuming up to 50% of total software development budgets. No prior study has evaluated interactive terminal execution feedback for repository-level test suite generation to overcome compliance bias. We evaluate an open-source multi-agent framework combining DeepSeek-V3 via SWE-agent CLI terminal and Llama-3.3-70B across 1,552 Python tasks from the TestExplora benchmark. Our approach achieves 35.05% average Pass@1 Fail-to-Pass rate versus 16.60% baseline and 71.59% Pass@3 rate (Wilcoxon p = 0.000000, Cliff's delta = 0.3018, medium). Our findings demonstrate that dynamic terminal execution feedback loops effectively break compliance bias, enabling proactive defect discovery in automated repository testing.
 
 ---
 
