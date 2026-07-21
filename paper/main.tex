@@ -1,63 +1,36 @@
 \documentclass[conference]{IEEEtran}
-\IEEEoverridecommandlockouts
-
-\usepackage{cite}
-\usepackage{amsmath,amssymb,amsfonts}
-\usepackage{algorithmic}
+\usepackage[utf8]{inputenc}
 \usepackage{graphicx}
-\usepackage{textcomp}
-\usepackage{xcolor}
-\usepackage{booktabs}
-\usepackage{listings}
-\usepackage{url}
-
-\lstset{
-  basicstyle=\ttfamily\small,
-  breaklines=true,
-  frame=single,
-  columns=fullflexible
-}
+\usepackage{booktabs}   % bang dep hon
+\usepackage{listings}   % code snippet
+\usepackage{hyperref}
 
 \begin{document}
 
 \title{Interactive Terminal Execution Feedback for Repository-Level Test Generation: An Empirical Study on TestExplora}
-
-\author{
-\IEEEauthorblockN{1\textsuperscript{st} Le Chi Tam}
-\IEEEauthorblockA{\textit{Department of Software Engineering} \\
-\textit{FPT University}\\
-Ho Chi Minh City, Vietnam \\
-tamlcse150000@fpt.edu.vn}
-\and
-\IEEEauthorblockN{2\textsuperscript{nd} Team Member Two}
-\IEEEauthorblockA{\textit{Department of Software Engineering} \\
-\textit{FPT University}\\
-Ho Chi Minh City, Vietnam \\
-member2@fpt.edu.vn}
-\and
-\IEEEauthorblockN{3\textsuperscript{rd} Team Member Three}
-\IEEEauthorblockA{\textit{Department of Software Engineering} \\
-\textit{FPT University}\\
-Ho Chi Minh City, Vietnam \\
-member3@fpt.edu.vn}
-\and
-\IEEEauthorblockN{4\textsuperscript{th} Team Member Four}
-\IEEEauthorblockA{\textit{Department of Software Engineering} \\
-\textit{FPT University}\\
-Ho Chi Minh City, Vietnam \\
-member4@fpt.edu.vn}
-}
+\author{\IEEEauthorblockN{Le Chi Tam, Member Two, Member Three, Member Four}
+\IEEEauthorblockA{FPT University, Vietnam}}
 
 \maketitle
 
-\input{sections/00_abstract.tex}
-\input{sections/01_intro.tex}
-\input{sections/02_related.tex}
-\input{sections/03_method.tex}
-\input{sections/04_results.tex}
-\input{sections/05_discussion.tex}
-\input{sections/06_threats.tex}
-\input{sections/07_conclusion.tex}
+\begin{abstract}
+\input{sections/00_abstract}
+\end{abstract}
+
+\begin{IEEEkeywords}
+large language models, unit test generation, interactive terminal feedback, compliance bias, empirical study
+\end{IEEEkeywords}
+% Keywords: 4-6 tu, chu thuong, phan tach bang dau phay
+% Chuan hoa ten: dung IEEE Thesaurus tai thesaurus.ieee.org
+% Vi du: "large language models" (khong viet "LLMs"), "software testing" (khong viet "SW testing")
+
+\input{sections/01_intro}
+\input{sections/02_related}
+\input{sections/03_method}
+\input{sections/04_results}
+\input{sections/05_discussion}
+\input{sections/06_threats}
+\input{sections/07_conclusion}
 
 \bibliographystyle{IEEEtran}
 \bibliography{references}

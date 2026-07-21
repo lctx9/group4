@@ -1,7 +1,1 @@
-\begin{abstract}
 Automated software testing is central to software quality assurance, yet it remains costly: in industrial settings, testing can account for up to 50\% of a project's development budget. Static language models used for test generation exhibit a compliance bias---they tend to accept erroneous output rather than identifying the underlying logic flaw. The effect of real-time interactive terminal execution feedback on repository-level test suite generation, and its potential to mitigate this bias, has not previously been studied. This article introduces a dual-agent, open-source system that pairs DeepSeek-V3, operating through the SWE-agent CLI bash terminal, with Llama-3.3-70B. We evaluated the approach on 1,552 Python tasks from the TestExplora benchmark. The system achieved an average Fail-to-Pass rate of 35.05\% at Pass@1, more than double the static baseline's 16.60\%. At Pass@3, this rate reached 71.59\% (Wilcoxon one-tailed test, $p = 0.000000 < 0.05$; Cliff's $\delta = 0.3018$, a medium effect size). These results indicate that incorporating real-time execution feedback reduces compliance bias in static LLMs and supports the feasibility of deploying proactive automated testing systems in CI/CD pipelines.
-\end{abstract}
-
-\begin{IEEEkeywords}
-Automated Test Generation, Large Language Models, Agentic Exploration, Interactive Terminal Feedback, Compliance Bias, TestExplora Benchmark.
-\end{IEEEkeywords}
