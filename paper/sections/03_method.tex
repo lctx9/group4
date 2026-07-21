@@ -51,11 +51,15 @@ Our replication package, including datasets, prompts, scripts, and raw results, 
 \label{subsec:metrics}
 We evaluate test suite quality using the Fail-to-Pass (F2P) rate metric defined by TestExplora~\cite{testexplora}:
 \begin{equation}
+\resizebox{0.95\columnwidth}{!}{$
 \text{F2P Rate} = \frac{\sum_{i=1}^{N} \mathbb{I}(\text{Test}_i(\text{Code}_{\text{buggy}}) = \text{Fail} \land \text{Test}_i(\text{Code}_{\text{fixed}}) = \text{Pass})}{N} \times 100
+$}
 \end{equation}
 A test suite achieves F2P success if and only if it fails on defective code (proving bug detection) and passes on corrected code (proving assertion validity). Single-run performance is reported as Pass@1. Multi-attempt cumulative success across $K=3$ independent sampling runs is evaluated as Pass@3:
 \begin{equation}
+\resizebox{0.95\columnwidth}{!}{$
 \text{Pass@}k = \frac{\sum_{i=1}^{N} \mathbb{I}\left( \exists j \in \{1,\dots,k\}: \text{F2P}_{i,j} = \text{Success} \right)}{N} \times 100
+$}
 \end{equation}
 The static Plain Context baseline threshold is set to 16.06\%, established by TestExplora~\cite{testexplora}.
 
