@@ -58,8 +58,8 @@ The static Plain Context baseline threshold is set to 16.06\%, established by Te
 
 \subsection{Statistical Analysis Plan}
 \label{subsec:stat}
-Following guidelines for statistical testing in software engineering~\cite{arcuri2011practical}, we employ non-parametric tests due to the non-normal distribution of repository F2P rates:
-\begin{itemize}
-    \item \textbf{Statistical Hypothesis Test:} Paired one-tailed Wilcoxon signed-rank test ($W$) evaluated at the repository level ($N_{\text{obs}} = 1,311$) using \texttt{scipy.stats.wilcoxon} with significance threshold $\alpha = 0.05$.
-    \item \textbf{Effect Size Measurement:} Non-parametric Cliff's Delta ($\delta$) calculated over paired repository observations. Effect size magnitudes are interpreted according to standard thresholds~\cite{arcuri2011practical, cliffs}: Negligible ($|\delta| < 0.147$), Small ($0.147 \le |\delta| < 0.33$), Medium ($0.33 \le |\delta| < 0.474$), and Large ($|\delta| \ge 0.474$).
-\end{itemize}
+Following guidelines for statistical testing in software engineering~\cite{arcuri2011practical}, we employ non-parametric tests due to the non-normal distribution of repository F2P rates.
+
+\textbf{Statistical Hypothesis Test:} Paired one-tailed Wilcoxon signed-rank test ($W$) evaluated at the repository observation level ($N_{\text{obs}} = 1,311$) using \texttt{scipy.stats.wilcoxon} with significance threshold $\alpha = 0.05$.
+
+\textbf{Effect Size Measurement:} Non-parametric Cliff's Delta ($\delta$) calculated over paired repository observations. Effect size magnitudes are interpreted according to standard thresholds~\cite{arcuri2011practical, cliffs}: Negligible ($|\delta| < 0.147$), Small ($0.147 \le |\delta| < 0.33$), Medium ($0.33 \le |\delta| < 0.474$), and Large ($|\delta| \ge 0.474$).
