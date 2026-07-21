@@ -1,16 +1,5 @@
-# Chặn các file cấu hình môi trường chứa API Key
-.env
-api_key.txt
-secrets.json
-
-# Chặn các thư mục rác của Python và hệ điều hành
+# Ignored files
+*.pdf
+.venv/
 __pycache__/
-*.pyc
-.DS_Store
-
-# Chặn checkpoint tạm thời (nếu không muốn đưa lên github quá sớm)
-results/*_checkpoint.csv
-
-# SỬA LỖI GATE E2 & E7: Giữ lại cấu trúc folder và file README tài liệu, chỉ chặn data nặng
-data/raw/*
-!data/raw/README.md
+*.log
