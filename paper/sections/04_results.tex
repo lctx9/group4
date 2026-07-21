@@ -13,6 +13,7 @@ The paired one-tailed Wilcoxon signed-rank test yields $W = 239,987.5$, $p = 0.0
 \begin{table}[t]
 \centering
 \caption{FAIL-TO-PASS PERFORMANCE COMPARISON (RQ1: $k=1$ SINGLE-SAMPLE BUDGET)}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{|l|c|c|c|}
 \hline
 \textbf{Condition} & \textbf{Metric (mean $\pm$ std)} & \textbf{$p$-value} & \textbf{Effect size} \\
@@ -20,7 +21,8 @@ The paired one-tailed Wilcoxon signed-rank test yields $W = 239,987.5$, $p = 0.0
 Agentic Exploration & 35.05\% $\pm$ 0.93\% & $p = 0.000000$ & $\delta = 0.3018$ (medium) \\
 Plain Baseline & 16.60\% $\pm$ 1.59\% & --- & --- \\
 \hline
-\end{tabular}
+\end{tabular}%
+}
 \label{tab:rq1_results}
 \end{table}
 
@@ -48,6 +50,7 @@ Comparing Pass@3 directly against Pass@1, the Wilcoxon signed-rank test yields $
 \begin{table}[t]
 \centering
 \caption{MULTI-SAMPLE BUDGET SCALING PERFORMANCE (RQ2: PASS@K METRICS)}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{|l|c|c|c|}
 \hline
 \textbf{Condition} & \textbf{Metric (mean $\pm$ std)} & \textbf{$p$-value} & \textbf{Effect size} \\
@@ -56,7 +59,8 @@ Pass@1 ($k=1$) & 35.05\% $\pm$ 0.93\% & Baseline & Baseline \\
 Pass@2 ($k=2$) & 58.12\% $\pm$ 1.12\% & $p < 0.000010$ & $\delta = 0.5210$ (large) \\
 Pass@3 ($k=3$) & 71.59\% $\pm$ 45.10\% & $p < 0.000010$ & $\delta = 0.7412$ (large) \\
 \hline
-\end{tabular}
+\end{tabular}%
+}
 \label{tab:rq2_results}
 \end{table}
 
@@ -98,6 +102,7 @@ Table~\ref{tab:domain_results} summarizes performance across the 10 software dom
 \begin{table*}[t]
 \centering
 \caption{EMPIRICAL EVALUATION ACROSS REPOSITORY DOMAINS ($N=1,552$ TASKS, $4,656$ AGENT EXECUTIONS)}
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{|l|c|c|c|c|c|c|c|}
 \hline
 \textbf{Repository Domain Category} & \textbf{Tasks ($N$)} & \textbf{Baseline F2P (\%)} & \textbf{Pass@1 F2P (\%)} & \textbf{Pass@3 F2P (\%)} & \textbf{Wilcoxon $W$} & \textbf{$p$-value} & \textbf{Cliff's $\delta$} \\
@@ -115,6 +120,7 @@ Embedded Systems \& Hardware & 13 & 15.38\% & 33.33\% & 69.23\% & 3.0 & 0.25000 
 \hline
 \textbf{Total / Overall Micro Average} & \textbf{1,552} & \textbf{16.60\%} & \textbf{35.05\%} & \textbf{71.59\%} & \textbf{239,987.5} & \textbf{0.000000} & \textbf{0.3018 (Medium)} \\
 \hline
-\end{tabular}
+\end{tabular}%
+}
 \label{tab:domain_results}
 \end{table*}
