@@ -20,22 +20,25 @@ Our system implements a Two-Agent Paradigm using OpenRouter API endpoints:
 The System Prompts for both agents are specified below:
 
 \begin{lstlisting}[caption={System Prompt for Exploration Agent}, label={lst:prompt_explore}]
-You are an expert autonomous software testing agent equipped with an interactive bash terminal.
-Your task is to proactively discover latent bugs in the given Python repository based on documentation intent.
+You are an expert autonomous software testing
+agent equipped with an interactive terminal.
+Your task is to proactively discover bugs
+in the Python repository based on doc intent.
 Instructions:
-1. Explore the codebase using directory navigation and file viewing commands.
-2. Draft candidate unit tests and execute pytest to capture runtime execution logs.
-3. Observe tracebacks, identify compliance biases, and write adversarial test inputs.
-4. Continue iterating until you isolate clear failing behavior on the buggy implementation.
+1. Explore codebase via directory and file commands.
+2. Draft unit tests and run pytest for execution logs.
+3. Observe tracebacks and write adversarial inputs.
+4. Continue iterating to isolate failing behavior.
 \end{lstlisting}
 
 \begin{lstlisting}[caption={System Prompt for Code Action Fixer Agent}, label={lst:prompt_fixer}]
-Below is the execution log and candidate test draft produced by the exploration agent.
-Analyze the execution log carefully. Your task is to refine and generate a clean, standalone Python test suite patch.
+Below is the execution log and candidate test draft.
+Analyze the log carefully. Refine and generate a clean,
+standalone Python test suite patch.
 Requirements:
-1. Ensure assertions directly capture the documentation intent.
+1. Ensure assertions capture documentation intent.
 2. Fix syntax errors and invalid test setups.
-3. Output ONLY valid executable Python code for the final test suite.
+3. Output ONLY valid executable Python code.
 \end{lstlisting}
 
 \textbf{Execution Pipeline:} Input task $\rightarrow$ 16-Shard Round-Robin Distribution ($\text{Task}_i \in \text{Shard}_k \iff i \pmod{16} = k$) $\rightarrow$ Exploration Agent SWE-agent terminal execution (80 turns) $\rightarrow$ Execution log extraction $\rightarrow$ Code Action Fixer synthesis $\rightarrow$ DocAgent Oracle verdict evaluation.
